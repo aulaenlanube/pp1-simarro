@@ -1,9 +1,9 @@
 # 🏛️ IES Simarro: Infraestructura Soberana de IA (PP1)
 
 [![Estado](https://img.shields.io/badge/Estado-Desarrollo-yellow)]()
-[![Arquitectura](https://img.shields.io/badge/Arquitectura-Blackwell-black?logo=nvidia)]()
 [![Release](https://img.shields.io/badge/Release-v0.0.1-blue)]()
 [![License](https://img.shields.io/badge/License-Apache--2.0-green)]()
+[![Arquitectura](https://img.shields.io/badge/Arquitectura-Blackwell-black?logo=nvidia)]()
 
 ## 📖 Visión General
 
@@ -39,4 +39,8 @@ El código de este repositorio está ajustado para explotar la siguiente topolog
 * **Rendimiento:** Hasta 1 PetaFLOP AI (FP4) por unidad.
 
 ---
+
+## 💡 Contribuir
+
+¿Te gustaría contribuir a este repositorio? ¡Excelente! Las Pull Requests son bienvenidas. Se aceptaran todo tipo de configuraciones y aportaciones relacionadas con el proyecto y sobre el hardware específico utilizado en el proyecto.
 
