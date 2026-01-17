@@ -1,4 +1,4 @@
-# 🏛️ IES Simarro: Infraestructura Soberana de IA (PP1)
+# 🏛️ IES Dr. Lluís Simarro: Infraestructura Soberana de IA (PP1)
 
 [![Estado](https://img.shields.io/badge/Estado-Desarrollo-yellow)]()
 [![Release](https://img.shields.io/badge/Release-v0.0.1-blue)]()
