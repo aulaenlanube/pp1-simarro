@@ -40,5 +40,3 @@ El código de este repositorio está ajustado para explotar la siguiente topolog
 
 ---
 
-
-docker-compose -f docker-compose.titan.yml up -d
