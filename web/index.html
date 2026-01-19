@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IES Dr. Lluís Simarro - Infraestructura Soberana de IA</title>
+    <meta name="description"
+        content="Infraestructura de Inteligencia Artificial Soberana del IES Dr. Lluís Simarro. Centro de Excelencia 2025.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div id="progress-bar"></div>
+    <div class="bg-glow"></div>
+
+    <header>
+        <div class="logo-container">
+            <img src="logo-simarro.webp" alt="Logo IES Simarro" class="logo-img">
+            <span class="brand-name">SIMARRO AI</span>
+        </div>
+        <nav>
+            <a href="#vision"
+                style="color: white; text-decoration: none; margin-left: 20px; font-weight: 600;">VISIÓN</a>
+            <a href="#hardware"
+                style="color: white; text-decoration: none; margin-left: 20px; font-weight: 600;">HARDWARE</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="badge-container">
+                    <div class="badge active"><i data-lucide="activity"></i> ESTADO: DESARROLLO</div>
+                    <div class="badge"><i data-lucide="tag"></i> RELEASE v0.0.1</div>
+                    <div class="badge"><i data-lucide="shield"></i> APACHE-2.0</div>
+                    <div class="badge"><i data-lucide="cpu"></i> BLACKWELL ARCH</div>
+                </div>
+                <h1>Infraestructura <span>Soberana</span> de IA</h1>
+                <p class="hero-lead">
+                    Gestionamos el futuro de la educación mediante un Centro de Procesamiento de Datos local de alto
+                    rendimiento.
+                </p>
+                <div style="animation: fadeInUp 1.4s ease-out;">
+                    <a href="#vision" class="cta-button">
+                        Explorar Proyecto <i data-lucide="arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vision Section -->
+        <section id="vision">
+            <h2 class="section-title reveal">📖 Visión <span>General</span></h2>
+            <div class="vision-grid">
+                <div class="glass-card reveal">
+                    <div class="card-icon"><i data-lucide="server"></i></div>
+                    <h3 class="card-title">CPD Local</h3>
+                    <p>Operamos sobre hardware propio para garantizar la soberanía tecnológica y eliminar la dependencia
+                        de la nube.</p>
+                </div>
+                <div class="glass-card reveal">
+                    <div class="card-icon"><i data-lucide="lock"></i></div>
+                    <h3 class="card-title">Privacidad Total</h3>
+                    <p>Los datos educativos nunca abandonan el centro, cumpliendo con los estándares más estrictos de
+                        seguridad.</p>
+                </div>
+                <div class="glass-card reveal">
+                    <div class="card-icon"><i data-lucide="zap"></i></div>
+                    <h3 class="card-title">Baja Latencia</h3>
+                    <p>Inferencia optimizada para el aula, permitiendo interacción en tiempo real sin retrasos de red
+                        externa.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hardware Section -->
+        <section id="hardware" style="background: rgba(255,255,255,0.02); border-radius: 40px; padding: 80px 5%;">
+            <h2 class="section-title reveal">🏗️ Topología de <span>Hardware</span></h2>
+
+            <div class="hardware-grid">
+                <!-- Titán -->
+                <div class="glass-card reveal" style="border-left: 4px solid var(--accent-green);">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+                        <div>
+                            <h3 class="card-title" style="margin-bottom: 0.5rem;">🧠 Nodo "Titán"</h3>
+                            <p style="color: var(--accent-green); font-weight: 600; font-size: 0.9rem;">ENTRENAMIENTO &
+                                DATASETS</p>
+                        </div>
+                        <i data-lucide="component" style="color: var(--accent-green); width: 40px; height: 40px;"></i>
+                    </div>
+                    <p style="margin-bottom: 2rem; color: var(--text-secondary);">El cerebro central para la generación
+                        de datasets sintéticos y re-entrenamiento masivo.</p>
+
+                    <div class="spec-container">
+                        <div class="spec-item">
+                            <i data-lucide="cpu" class="spec-icon"></i>
+                            <div class="spec-text">
+                                <h4>Procesador</h4>
+                                <p>AMD Ryzen Threadripper PRO 9995WX (96 Núcleos)</p>
+                            </div>
+                        </div>
+                        <div class="spec-item">
+                            <i data-lucide="hard-drive" class="spec-icon"></i>
+                            <div class="spec-text">
+                                <h4>Gráficos / VRAM</h4>
+                                <p>4x NVIDIA RTX PRO 6000 Blackwell (384 GB VRAM)</p>
+                            </div>
+                        </div>
+                        <div class="spec-item">
+                            <i data-lucide="layers" class="spec-icon"></i>
+                            <div class="spec-text">
+                                <h4>Memoria RAM</h4>
+                                <p>1 TB DDR5 ECC (Octa-Channel)</p>
+                            </div>
+                        </div>
+                        <div class="spec-item">
+                            <i data-lucide="database" class="spec-icon"></i>
+                            <div class="spec-text">
+                                <h4>Almacenamiento</h4>
+                                <p>32 TB NVMe PCIe 5.0 (RAID 10)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spark -->
+                <div class="glass-card reveal" style="border-left: 4px solid var(--accent-blue);">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+                        <div>
+                            <h3 class="card-title" style="margin-bottom: 0.5rem;">⚡ Array "Spark"</h3>
+                            <p style="color: var(--accent-blue); font-weight: 600; font-size: 0.9rem;">INFERENCIA
+                                DISTRIBUIDA</p>
+                        </div>
+                        <i data-lucide="zap" style="color: var(--accent-blue); width: 40px; height: 40px;"></i>
+                    </div>
+                    <p style="margin-bottom: 2rem; color: var(--text-secondary);">Cluster de inferencia lógica para
+                        asistentes del alumnado y RAGs departamentales.</p>
+
+                    <div class="spec-container">
+                        <div class="spec-item">
+                            <i data-lucide="box" class="spec-icon" style="color: var(--accent-blue);"></i>
+                            <div class="spec-text">
+                                <h4>Nodos Físicos</h4>
+                                <p>8x NVIDIA DGX Spark (Superchip GB10)</p>
+                            </div>
+                        </div>
+                        <div class="spec-item">
+                            <i data-lucide="network" class="spec-icon" style="color: var(--accent-blue);"></i>
+                            <div class="spec-text">
+                                <h4>Interconexión</h4>
+                                <p>Fibra óptica directa a 200Gb/s</p>
+                            </div>
+                        </div>
+                        <div class="spec-item">
+                            <i data-lucide="microchip" class="spec-icon" style="color: var(--accent-blue);"></i>
+                            <div class="spec-text">
+                                <h4>Capacidad de Modelo</h4>
+                                <p>Hasta 405B Parámetros (Llama-3.1)</p>
+                            </div>
+                        </div>
+                        <div class="spec-item">
+                            <i data-lucide="flame" class="spec-icon" style="color: var(--accent-blue);"></i>
+                            <div class="spec-text">
+                                <h4>Rendimiento</h4>
+                                <p>1 PetaFLOP AI (FP4) por unidad</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contribution Section -->
+        <section id="contribuir" class="reveal">
+            <div class="glass-card"
+                style="text-align: center; background: linear-gradient(135deg, rgba(118, 185, 0, 0.1) 0%, rgba(0, 180, 216, 0.1) 100%);">
+                <h2 class="section-title" style="margin-bottom: 1.5rem;">💡 ¿Quieres <span>Contribuir</span>?</h2>
+                <p class="hero-lead" style="margin-bottom: 2.5rem;">
+                    Las Pull Requests son bienvenidas. Aceptamos configuraciones, optimizaciones y aportaciones
+                    relacionadas con el hardware específico del proyecto.
+                </p>
+                <a href="#" class="cta-button">
+                    <i data-lucide="github"></i> Ver en GitHub
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <img src="logo-simarro.webp" alt="Logo" style="height: 40px; margin-bottom: 1rem; opacity: 0.8;">
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            &copy; 2025 IES Dr. Lluís Simarro - Centro de Excelencia.<br>
+            Construyendo la soberanía tecnológica educativa.
+        </p>
+    </footer>
+
+    <!-- Custom Logic -->
+    <script src="index.js"></script>
+</body>
+
+</html>

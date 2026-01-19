@@ -5,6 +5,9 @@
 [![License](https://img.shields.io/badge/License-Apache--2.0-green)]()
 [![Arquitectura](https://img.shields.io/badge/Arquitectura-Blackwell-black?logo=nvidia)]()
 
+![Preview](web/edificio-simarro.webp)
+
+
 ## 📖 Visión General
 
 Este repositorio gestiona la infraestructura de **Inteligencia Artificial Soberana** del IES Dr. Lluís Simarro (Centro de Excelencia 2025). 
