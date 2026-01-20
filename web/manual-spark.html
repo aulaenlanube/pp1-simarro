@@ -197,6 +197,7 @@
             overflow: hidden;
             transition: var(--transition);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            scroll-margin-top: 110px;
         }
 
         .accordion-header {
@@ -330,10 +331,10 @@
 
                             <h3>1. Sistema Operativo y Controladores</h3>
                             <ul class="list-items">
-                                <li><i data-lucide="check-circle"></i> <strong>SO:</strong> Ubuntu 24.04 LTS o superior.
+                                <li><i data-lucide="check-circle"></i> <strong>SO:</strong> Ubuntu 22.04 LTS o superior.
                                 </li>
-                                <li><i data-lucide="check-circle"></i> <strong>Arquitectura:</strong> Grace Blackwell
-                                    (GB200).</li>
+                                <li><i data-lucide="check-circle"></i> <strong>Arquitectura:</strong> Grace Blackwell.
+                                </li>
                             </ul>
                             <p>Verifica que los controladores de NVIDIA estén operativos:</p>
                             <div class="code-container">
@@ -477,6 +478,70 @@ ip addr show <span class="critical-iface">enp1s0f1np1</span></code></pre>
                                 <li><i data-lucide="check-circle"></i> <strong>8265</strong> - Ray Dashboard</li>
                                 <li><i data-lucide="check-circle"></i> <strong>8000</strong> - vLLM API</li>
                             </ul>
+
+                            <div
+                                style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); margin-top: 1.5rem;">
+                                <h4 style="margin-top: 0; color: var(--accent-orange); margin-bottom: 1rem;">Ejemplo de
+                                    Configuración Práctica</h4>
+                                <p><strong>Datos del ejemplo:</strong></p>
+                                <ul class="list-items" style="margin-bottom: 1rem;">
+                                    <li><i data-lucide="arrow-right-circle"></i> <strong>Nodo A:</strong>
+                                        169.254.123.147</li>
+                                    <li><i data-lucide="arrow-right-circle"></i> <strong>Nodo B:</strong> 169.254.214.62
+                                    </li>
+                                </ul>
+
+                                <h5 style="color: var(--accent-blue); margin-top: 1.5rem;">1. En el NODO A (IP ...147)
+                                </h5>
+                                <p style="font-size: 0.95rem;">Debe dar permiso a la IP del B (...62):</p>
+                                <div class="code-container">
+                                    <div class="code-header">
+                                        <span class="lang">Bash (Terminal Nodo A)</span>
+                                        <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                            Copiar</button>
+                                    </div>
+                                    <pre class="code-block"><code><span class="comment"># Permitir tráfico entrante DESDE el Nodo B</span>
+sudo ufw allow from 169.254.214.62 to any port 6379 proto tcp comment 'Ray GCS desde Nodo B'
+sudo ufw allow from 169.254.214.62 to any port 8265 proto tcp comment 'Ray Dashboard desde Nodo B'
+sudo ufw allow from 169.254.214.62 to any port 8000 proto tcp comment 'vLLM API desde Nodo B'
+
+<span class="comment"># Recargar firewall</span>
+sudo ufw reload</code></pre>
+                                </div>
+
+                                <h5 style="color: var(--accent-blue); margin-top: 1.5rem;">2. En el NODO B (IP ...62)
+                                </h5>
+                                <p style="font-size: 0.95rem;">Debe dar permiso a la IP del A (...147):</p>
+                                <div class="code-container">
+                                    <div class="code-header">
+                                        <span class="lang">Bash (Terminal Nodo B)</span>
+                                        <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                            Copiar</button>
+                                    </div>
+                                    <pre class="code-block"><code><span class="comment"># Permitir tráfico entrante DESDE el Nodo A</span>
+sudo ufw allow from 169.254.123.147 to any port 6379 proto tcp comment 'Ray GCS desde Nodo A'
+sudo ufw allow from 169.254.123.147 to any port 8265 proto tcp comment 'Ray Dashboard desde Nodo A'
+sudo ufw allow from 169.254.123.147 to any port 8000 proto tcp comment 'vLLM API desde Nodo A'
+
+<span class="comment"># Recargar firewall</span>
+sudo ufw reload</code></pre>
+                                </div>
+
+                                <h5 style="color: var(--accent-blue); margin-top: 1.5rem;">3. Comprobación final</h5>
+                                <p style="font-size: 0.95rem;">Verifica que las reglas se han cargado correctamente en
+                                    ambos nodos:</p>
+                                <div class="code-container">
+                                    <div class="code-header">
+                                        <span class="lang">Bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                            Copiar</button>
+                                    </div>
+                                    <pre class="code-block"><code>sudo ufw status</code></pre>
+                                </div>
+                                <p style="font-size: 0.95rem; margin-bottom: 0;">Deberías ver que el estado es
+                                    <strong>active</strong> y que las reglas especifican la IP de origen correcta.
+                                </p>
+                            </div>
 
                             <h3>9. Autenticación Hugging Face</h3>
                             <p>Modelos como Llama-3 o Gemma requieren autorización previa:</p>
@@ -876,6 +941,14 @@ echo "Servidor vLLM para Llama 3.1 405B iniciado con parámetros restringidos."<
             if (!isActive) {
                 item.classList.add('active');
                 content.style.height = content.scrollHeight + 'px';
+
+                // Scroll to item after transition
+                setTimeout(() => {
+                    item.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 300);
             }
         }
 
