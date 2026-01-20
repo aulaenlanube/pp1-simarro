@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nodo Spark - PP1-Simarro</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .hero-mini {
+            padding: 60px 5% 10px;
+            text-align: center;
+            background: transparent;
+        }
+
+        .hero-mini h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -1.5px;
+        }
+
+        .hero-mini span {
+            color: var(--accent-blue);
+        }
+
+        .hero-lead {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        .content-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 5% 5rem;
+        }
+
+        .spark-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-icon {
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+            width: 40px;
+            height: 40px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .manuals-section {
+            background: rgba(0, 115, 207, 0.03);
+            border-radius: 30px;
+            padding: 4rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+            border: 1px solid rgba(0, 115, 207, 0.1);
+        }
+
+        .manuals-grid {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+
+        .manual-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2.5rem;
+            background: white;
+            border-radius: 20px;
+            text-decoration: none;
+            width: 320px;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        .manual-btn:hover {
+            transform: scale(1.03);
+            border-color: var(--accent-blue);
+            box-shadow: 0 20px 40px rgba(0, 115, 207, 0.1);
+        }
+
+        .manual-btn i {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 1.5rem;
+        }
+
+        .manual-btn h4 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .manual-btn p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .btn-single i {
+            color: #76b900;
+        }
+
+        .btn-dual i {
+            color: var(--accent-orange);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="progress-bar"></div>
+    <div class="bg-glow"></div>
+
+    <header>
+        <div class="logo-container">
+            <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
+                <img src="logo-simarro.webp" alt="Logo IES Simarro" class="logo-img">
+                <div class="logo-info">
+                    <span class="brand-name">PP1-Simarro</span>
+                    <span class="brand-subtitle">Centro de excelencia en IA y BD</span>
+                </div>
+            </a>
+        </div>
+        <nav id="main-nav">
+            <a href="index.html"><i data-lucide="home"></i> INICIO</a>
+            <a href="#" class="active"><i data-lucide="zap"></i> NODO SPARK</a>
+            <a href="manual-titan.html"><i data-lucide="server"></i> NODO TITÁN</a>
+            <a href="red.html"><i data-lucide="network"></i> RED</a>
+            <a href="https://github.com/aulaenlanube/pp1-simarro" target="_blank" class="github-link"><i
+                    data-lucide="github"></i> GITHUB</a>
+        </nav>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">
+            <i data-lucide="menu"></i>
+        </button>
+    </header>
+
+    <main>
+        <section class="hero-mini">
+            <h1>Superordenador <span>DGX Spark</span></h1>
+            <p class="hero-lead">La primera plataforma de desarrollo de IA del mundo basada en la arquitectura NVIDIA
+                Grace Blackwell, diseñada para llevar el rendimiento de un centro de datos a tu escritorio.</p>
+        </section>
+
+        <article class="content-container">
+            <div class="spark-features">
+                <div class="feature-card">
+                    <i data-lucide="cpu" class="feature-icon"></i>
+                    <h3>Superchip NVIDIA GB10</h3>
+                    <p>Hasta 1 petaFLOP de rendimiento de IA con precisión FP4. Arquitectura Grace Blackwell diseñada
+                        para la máxima eficiencia.</p>
+                </div>
+                <div class="feature-card">
+                    <i data-lucide="layers" class="feature-icon"></i>
+                    <h3>Memoria Unificada</h3>
+                    <p>128 GB de memoria de sistema unificada coherente. Permite ejecutar modelos de hasta 200.000
+                        millones de parámetros localmente.</p>
+                </div>
+                <div class="feature-card">
+                    <i data-lucide="share-2" class="feature-icon"></i>
+                    <h3>Interconexión ConnectX</h3>
+                    <p>Redes de alto rendimiento ConnectX-7 que permiten el stacking de dos sistemas para escalar hasta
+                        405.000 millones de parámetros.</p>
+                </div>
+            </div>
+
+            <div class="manuals-section">
+                <h2 style="font-weight: 800; letter-spacing: -1px;">Guías Técnicas de Despliegue</h2>
+                <p style="color: var(--text-secondary);">Selecciona el modo de operación para acceder a la documentación
+                    específica.</p>
+
+                <div class="manuals-grid">
+                    <a href="manual-single-spark.html" class="manual-btn btn-single">
+                        <i data-lucide="tablet"></i>
+                        <h4>Manual Single-Spark</h4>
+                        <p>Configuración para un nodo independiente con 128GB de memoria.</p>
+                    </a>
+                    <a href="manual-spark.html" class="manual-btn btn-dual">
+                        <i data-lucide="layout-grid"></i>
+                        <h4>Manual Dual-Spark</h4>
+                        <p>Configuración de cluster virtual mediante interconexión 200Gb/s.</p>
+                    </a>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <img src="logo-simarro.webp" alt="Logo" style="height: 120px; margin-bottom: 1rem; opacity: 1;">
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            &copy; 2026 IES Dr. Lluís Simarro - Centro de Excelencia.<br>
+            Impulsando el desarrollo de la IA Soberana.
+        </p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

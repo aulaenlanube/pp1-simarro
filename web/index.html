@@ -25,13 +25,21 @@
 
     <header>
         <div class="logo-container">
-            <img src="logo-simarro.webp" alt="Logo IES Simarro" class="logo-img">
-            <span class="brand-name">PP1-Simarro</span>
+            <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
+                <img src="logo-simarro.webp" alt="Logo IES Simarro" class="logo-img">
+                <div class="logo-info">
+                    <span class="brand-name">PP1-Simarro</span>
+                    <span class="brand-subtitle">Centro de excelencia en IA y BD</span>
+                </div>
+            </a>
         </div>
         <nav id="main-nav">
-            <a href="#vision">VISIÓN</a>
-            <a href="#hardware">HARDWARE</a>
-            <a href="manual-spark.html">MANUAL SPARK</a>
+            <a href="index.html" class="active"><i data-lucide="home"></i> INICIO</a>
+            <a href="nodo-spark.html"><i data-lucide="zap"></i> NODO SPARK</a>
+            <a href="manual-titan.html"><i data-lucide="server"></i> NODO TITÁN</a>
+            <a href="red.html"><i data-lucide="network"></i> RED</a>
+            <a href="https://github.com/aulaenlanube/pp1-simarro" target="_blank" class="github-link"><i
+                    data-lucide="github"></i> GITHUB</a>
         </nav>
         <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">
             <i data-lucide="menu"></i>
