@@ -203,10 +203,12 @@ header nav a.active {
 .brand-subtitle {
     font-size: 0.65rem;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: #e65100;
+    /* Naranja oscuro corporativo */
     text-transform: uppercase;
     letter-spacing: 0.2px;
-    opacity: 0.8;
+    opacity: 1;
+    /* Aumentada la opacidad para mayor nitidez */
 }
 
 /* Hero Section */
