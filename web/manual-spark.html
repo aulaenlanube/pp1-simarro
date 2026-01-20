@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Configuración Dual Spark - IES Dr. Lluís Simarro</title>
+    <meta name="description"
+        content="Guía técnica para la configuración dual de NVIDIA DGX Spark para inferencia distribuida con modelos de gran tamaño.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .manual-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 5%;
+        }
+
+        .guide-section {
+            margin-bottom: 4rem;
+        }
+
+        .guide-section h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            border-left: 5px solid var(--accent-orange);
+            padding-left: 20px;
+        }
+
+        .guide-section h3 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: var(--accent-blue);
+        }
+
+        .guide-section p {
+            margin-bottom: 1.2rem;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .code-container {
+            position: relative;
+            margin: 1.5rem 0;
+            background: #1a1b20;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-header .lang {
+            font-size: 0.75rem;
+            color: var(--accent-orange);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ccc;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-color: var(--accent-orange);
+        }
+
+        .code-block {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0;
+            background: transparent;
+            border: none;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: #00b4d8;
+            /* Cyan/Teal vibrante para comentarios */
+            font-size: 0.95rem;
+            margin-bottom: 0.6rem;
+            display: block;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .code-block .hljs-comment,
+        .code-block .comment {
+            color: #7a828a !important;
+            font-style: italic;
+        }
+
+        .critical-iface {
+            color: #ff3e3e !important;
+            font-weight: 700;
+        }
+
+        code {
+            color: #76b900;
+            /* NVIDIA Green */
+        }
+
+        .warning-box {
+            background: rgba(255, 107, 0, 0.05);
+            border-left: 4px solid var(--accent-orange);
+            padding: 1.5rem;
+            border-radius: 0 15px 15px 0;
+            margin: 2rem 0;
+        }
+
+        .warning-box strong {
+            color: var(--accent-orange);
+            display: block;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .note-box {
+            background: rgba(0, 119, 182, 0.05);
+            border-left: 4px solid var(--accent-blue);
+            padding: 1rem 1.5rem;
+            border-radius: 0 15px 15px 0;
+            margin: 1.5rem 0;
+            font-style: italic;
+        }
+
+        .list-items {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .list-items li {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-secondary);
+        }
+
+        .list-items li i {
+            color: var(--accent-orange);
+            width: 18px;
+        }
+
+        .hero-mini {
+            padding: 60px 5% 40px;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), var(--bg-light));
+        }
+
+        .hero-mini h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Accordion Styles */
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin-top: 2rem;
+        }
+
+        .accordion-item {
+            background: white;
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+        }
+
+        .accordion-header {
+            width: 100%;
+            padding: 1.8rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: white;
+            border: none;
+            text-align: left;
+            transition: var(--transition);
+        }
+
+        .accordion-header:hover {
+            background: rgba(255, 107, 0, 0.03);
+        }
+
+        .accordion-header h2 {
+            font-size: 1.6rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            color: var(--text-primary);
+            border: none;
+            padding: 0;
+        }
+
+        .accordion-header h2 i {
+            color: var(--accent-orange);
+            width: 28px;
+            height: 28px;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #fdfdfd;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(255, 107, 0, 0.03) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(0, 115, 207, 0.03) 0px, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .accordion-icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            transition: var(--transition);
+        }
+
+        .accordion-content {
+            height: 0;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 2.5rem;
+            opacity: 0;
+        }
+
+        .accordion-item.active .accordion-content {
+            height: auto !important;
+            padding-top: 2.5rem;
+            padding-bottom: 3.5rem;
+            /* Aumentado para evitar cortes */
+            opacity: 1;
+        }
+
+        /* Adjust internal guide sections since they are now inside accordion */
+        .accordion-content .guide-section {
+            padding: 0;
+            margin: 0;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="progress-bar"></div>
+    <div class="bg-glow"></div>
+
+    <header>
+        <div class="logo-container">
+            <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 15px;">
+                <img src="logo-simarro.webp" alt="Logo IES Simarro" class="logo-img">
+                <span class="brand-name">PP1-Simarro</span>
+            </a>
+        </div>
+        <nav>
+            <a href="index.html">INICIO</a>
+            <a href="index.html#vision">VISIÓN</a>
+            <a href="index.html#hardware">HARDWARE</a>
+            <a href="#" style="color: var(--accent-orange);">MANUAL SPARK</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero-mini">
+            <h1>Manual <span>Dual-Node</span> DGX Spark</h1>
+            <p class="hero-lead">Configuración de inferencia distribuida mediante interconexión de 200Gb/s.</p>
+        </section>
+
+        <article class="manual-container">
+            <div class="accordion">
+                <!-- Bloque 1: Prerrequisitos -->
+                <div class="accordion-item active" id="item-prerrequisitos">
+                    <button class="accordion-header" onclick="toggleAccordion('item-prerrequisitos')">
+                        <h2><i data-lucide="list-checks"></i> Prerrequisitos</h2>
+                        <div class="accordion-icon-box"><i data-lucide="chevron-down"></i></div>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="guide-section">
+                            <div class="note-box">
+                                Las configuraciones de un solo nodo solo requieren los pasos 1, 2 y 7 (Token de
+                                HuggingFace). La configuración de red y SSH se automatiza mediante los scripts oficiales
+                                de NVIDIA de los pasos 4 y 5.
+                            </div>
+
+                            <h3>1. Sistema Operativo y Controladores</h3>
+                            <ul class="list-items">
+                                <li><i data-lucide="check-circle"></i> <strong>SO:</strong> Ubuntu 24.04 LTS o superior.
+                                </li>
+                                <li><i data-lucide="check-circle"></i> <strong>Arquitectura:</strong> Grace Blackwell
+                                    (GB200).</li>
+                            </ul>
+                            <p>Verifica que los controladores de NVIDIA estén operativos:</p>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>nvidia-smi</code></pre>
+                            </div>
+
+                            <h3>2. Docker con NVIDIA Container Runtime</h3>
+                            <p>Docker debe estar instalado con NVIDIA Container Runtime configurado. Verifica el acceso
+                                utilizando CUDA 13 en Ubuntu 22.04:</p>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre
+                                    class="code-block"><code>docker run --rm --gpus all nvidia/cuda:13.0.1-base-ubuntu22.04 nvidia-smi</code></pre>
+                            </div>
+
+                            <h3>3. Cables de Interconexión Aprobados</h3>
+                            <p>Para la conexión directa de 200GbE entre los puertos CX-7, NVIDIA recomienda
+                                exclusivamente estos modelos:</p>
+                            <ul class="list-items">
+                                <li><i data-lucide="cable"></i> <strong>Amphenol:</strong> NJAAKK-N911 (QSFP to QSFP112,
+                                    400mm).</li>
+                                <li><i data-lucide="cable"></i> <strong>Luxshare:</strong> LMTQF022-SD-R (QSFP112 400G
+                                    DAC, 400mm).</li>
+                            </ul>
+                            <div class="note-box">
+                                Nota: Los puertos CX-7 de la DGX Spark solo soportan configuración
+                                <strong>Ethernet</strong>.
+                            </div>
+
+                            <h3>4. Configuración de Red (Automatizada con Netplan)</h3>
+                            <p>NVIDIA proporciona un archivo de configuración para facilitar la asignación de IPs en las
+                                interfaces CX-7. Ejecuta esto en ambos nodos:</p>
+
+                            <span class="code-comment"># Descargar y aplicar configuración de Netplan</span>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>sudo wget -O /etc/netplan/40-cx7.yaml https://github.com/NVIDIA/dgx-spark-playbooks/raw/main/nvidia/connect-two-sparks/assets/cx7-netplan.yaml
+sudo chmod 600 /etc/netplan/40-cx7.yaml
+sudo netplan apply</code></pre>
+                            </div>
+
+                            <h3>5. Script de Descubrimiento y SSH</h3>
+                            <p>Este paso identifica automáticamente los sistemas interconectados y configura el SSH sin
+                                contraseña. Ejecútalo en ambos nodos:</p>
+
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code><span class="comment"># Descargar y ejecutar script de descubrimiento</span>
+wget https://github.com/NVIDIA/dgx-spark-playbooks/raw/refs/heads/main/nvidia/connect-two-sparks/assets/discover-sparks
+chmod +x discover-sparks
+./discover-sparks</code></pre>
+                            </div>
+
+                            <h3>6. Verificación Detallada de Interfaces (ibdev2netdev)</h3>
+                            <p>Confirma que los puertos CX-7 están en estado "(Up)" tras aplicar la red. Es fundamental
+                                verificar la conexión física:</p>
+
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code><span class="comment"># Comprobar estado de los puertos de red</span>
+ibdev2netdev</code></pre>
+                            </div>
+
+                            <p>Ejemplo de salida detallada:</p>
+                            <div class="code-container">
+                                <pre class="code-block"><code>roceP2p1s0f0 port 1 ==> enP2p1s0f0np0 (Down)
+roceP2p1s0f1 port 1 ==> enP2p1s0f1np1 (Up)
+rocep1s0f0 port 1 ==> enp1s0f0np0 (Down)
+rocep1s0f1 port 1 ==> <span class="critical-iface">enp1s0f1np1</span> (Up)</code></pre>
+                            </div>
+
+                            <div class="note-box">
+                                <strong>Importante:</strong> Usa una interfaz que aparezca como "(Up)". Puedes ignorar
+                                interfaces con prefijo <code>enP2p...</code> y priorizar siempre las que comienzan por
+                                <code>enp1...</code>. Si nada aparece como "(Up)", revisa el cable QSFP.
+                            </div>
+
+                            <h3>7. Identificación de IPs ConnectX-7 (CX-7)</h3>
+                            <p>Localiza la IP de alta velocidad necesaria para la comunicación entre nodos. Ejecuta en
+                                ambos servidores:</p>
+
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code><span class="comment"># Ver IP de la interfaz ConnectX-7 activa</span>
+ip addr show <span class="critical-iface">enp1s0f1np1</span></code></pre>
+                            </div>
+
+                            <span class="code-comment"># Probar latencia de red de alta velocidad</span>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>ping &lt;IP-CX7-DEL-OTRO-NODO&gt;</code></pre>
+                            </div>
+
+                            <div class="warning-box"
+                                style="border-color: #ff3e3e; background: rgba(255, 62, 62, 0.05); margin-bottom: 2rem;">
+                                <strong style="color: #ff3e3e;">Nota Crítica</strong>
+                                Anota estas IPs. Son las que usarás en el Paso 3 (vLLM) como <code>MASTER_ADDR</code>
+                                para
+                                garantizar los 200Gbps de ancho de banda.
+                            </div>
+
+                            <p>Consulta la documentación adicional si es necesario:</p>
+                            <a href="https://build.nvidia.com/spark/nccl/stacked-sparks" class="cta-button"
+                                style="padding: 12px 24px; font-size: 0.9rem; margin-bottom: 1rem;">
+                                <i data-lucide="external-link"></i> Guía de NVIDIA
+                            </a>
+
+                            <h3>8. Configuración del Firewall</h3>
+                            <p>Asegúrate de que los siguientes puertos estén abiertos entre ambos nodos:</p>
+                            <ul class="list-items">
+                                <li><i data-lucide="check-circle"></i> <strong>6379</strong> - Ray GCS</li>
+                                <li><i data-lucide="check-circle"></i> <strong>8265</strong> - Ray Dashboard</li>
+                                <li><i data-lucide="check-circle"></i> <strong>8000</strong> - vLLM API</li>
+                            </ul>
+
+                            <h3>9. Autenticación Hugging Face</h3>
+                            <p>Modelos como Llama-3 o Gemma requieren autorización previa:</p>
+
+                            <span class="code-comment"># Instalar la CLI de Hugging Face (ejecutar en ambos
+                                nodos)</span>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>pip install huggingface_hub</code></pre>
+                            </div>
+
+                            <span class="code-comment"># Iniciar sesión en Hugging Face (ejecutar en ambos nodos)</span>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>hf auth login</code></pre>
+                            </div>
+
+                            <p>Alternativamente, puedes establecer el token en tu entorno local:</p>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Config</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>HF_TOKEN="hf_your_token_here"</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloque 2: Implementación de NCCL -->
+                <div class="accordion-item" id="item-nccl">
+                    <button class="accordion-header" onclick="toggleAccordion('item-nccl')">
+                        <h2><i data-lucide="share-2"></i> Implementación de NCCL para Dual Spark</h2>
+                        <div class="accordion-icon-box"><i data-lucide="chevron-down"></i></div>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="guide-section">
+                            <p>NCCL (NVIDIA Collective Communications Library) es fundamental para optimizar la
+                                transferencia de
+                                datos entre las GPUs de ambos nodos.</p>
+
+                            <div class="note-box"
+                                style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <i data-lucide="book-open" style="color: var(--accent-orange);"></i>
+                                    <span><strong>Documentación Técnica:</strong> Guía oficial para profundizar en
+                                        NCCL.</span>
+                                </div>
+                                <a href="https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/overview.html"
+                                    target="_blank" class="cta-button"
+                                    style="padding: 10px 20px; font-size: 0.85rem; margin: 0;">
+                                    <i data-lucide="external-link"></i> Abrir Guía NCCL
+                                </a>
+                            </div>
+
+                            <h3>Paso 1: Configurar conectividad de red</h3>
+                            <p>Asegúrate de haber completado la conexión física mediante cable QSFP y de tener
+                                configurado el SSH
+                                sin contraseña entre ambos nodos.</p>
+
+                            <h3>Paso 2: Construir NCCL con soporte Blackwell</h3>
+                            <p>Ejecuta estos comandos en ambos nodos para compilar NCCL desde el código fuente con
+                                soporte para la
+                                arquitectura Blackwell:</p>
+
+                            <span class="code-comment"># Instalar dependencias y clonar repositorio</span>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>sudo apt-get update && sudo apt-get install -y libopenmpi-dev
+git clone -b v2.28.9-1 https://github.com/NVIDIA/nccl.git ~/nccl/</code></pre>
+                            </div>
+
+                            <span class="code-comment"># Compilar para Blackwell (sm_121)</span>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>cd ~/nccl/
+make -j src.build NVCC_GENCODE="-gencode=arch=compute_121,code=sm_121"</code></pre>
+                            </div>
+
+                            <span class="code-comment"># Configurar variables de entorno</span>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>export CUDA_HOME="/usr/local/cuda"
+export MPI_HOME="/usr/lib/aarch64-linux-gnu/openmpi"
+export NCCL_HOME="$HOME/nccl/build/"
+export LD_LIBRARY_PATH="$NCCL_HOME/lib:$CUDA_HOME/lib64/:$MPI_HOME/lib:$LD_LIBRARY_PATH"</code></pre>
+                            </div>
+
+                            <h3>Paso 3: Construir suite de pruebas NCCL</h3>
+                            <p>Compila los tests de NCCL en ambos nodos para verificar el rendimiento:</p>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>git clone https://github.com/NVIDIA/nccl-tests.git ~/nccl-tests/
+cd ~/nccl-tests/
+make MPI=1</code></pre>
+                            </div>
+
+                            <h3>Paso 4: Identificar interfaz activa e IPs</h3>
+                            <p>Identifica qué puertos de red están activos (Up) utilizando <code>ibdev2netdev</code> e
+                                inspecciona
+                                su IP:</p>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>ibdev2netdev
+ip addr show <span class="critical-iface">enp1s0f1np1</span></code></pre>
+                            </div>
+                            <div class="note-box">
+                                Utiliza la interfaz que aparezca como "(Up)". En DGX Spark, suele ser una interfaz que
+                                comienza por
+                                <code>enp1</code>.
+                            </div>
+
+                            <span class="code-comment"># Ejecutar test de comunicación (reemplaza las IPs con las
+                                tuyas)</span>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code><span class="comment"># Configurar variables de la interfaz activa</span>
+export UCX_NET_DEVICES=<span class="critical-iface">enp1s0f1np1</span>
+export NCCL_SOCKET_IFNAME=<span class="critical-iface">enp1s0f1np1</span>
+export OMPI_MCA_btl_tcp_if_include=<span class="critical-iface">enp1s0f1np1</span>
+
+<span class="comment"># Ejecutar test de ancho de banda estándar</span>
+mpirun -np 2 -H <IP_NODO_1>:1,<IP_NODO_2>:1 \
+--mca plm_rsh_agent "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking =no" \
+-x LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+$HOME/nccl-tests/build/all_gather_perf
+
+<span class="comment"># Ejecutar test con buffer grande para maximizar los 200Gbps</span>
+mpirun -np 2 -H <IP_NODO_1>:1,<IP_NODO_2>:1 \
+--mca plm_rsh_agent "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" \
+-x LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+$HOME/nccl-tests/build/all_gather_perf -b 16G -e 16G -f 2</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloque 3: Despliegue de vLLM -->
+                <div class="accordion-item" id="item-vllm">
+                    <button class="accordion-header" onclick="toggleAccordion('item-vllm')">
+                        <h2><i data-lucide="rocket"></i> Despliegue de vLLM para Inferencia</h2>
+                        <div class="accordion-icon-box"><i data-lucide="chevron-down"></i></div>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="guide-section">
+                            <p>Una vez verificado NCCL, configuraremos vLLM para servir modelos de lenguaje a gran
+                                escala
+                                aprovechando la potencia de los dos nodos Spark.</p>
+
+                            <h3>Paso 1: Script de despliegue del cluster</h3>
+                            <p>Descarga el script que coordina la configuración del cluster Ray en ambos nodos:</p>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>wget https://raw.githubusercontent.com/vllm-project/vllm/refs/heads/main/examples/online_serving/run_cluster.sh
+chmod +x run_cluster.sh</code></pre>
+                            </div>
+
+                            <h3>Paso 2: Imagen de vLLM desde NVIDIA NGC</h3>
+                            <p>Configura Docker y descarga la imagen oficial optimizada:</p>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>docker pull nvcr.io/nvidia/vllm:25.11-py3
+export VLLM_IMAGE=nvcr.io/nvidia/vllm:25.11-py3</code></pre>
+                            </div>
+
+                            <h3>Paso 3: Iniciar el Nodo Maestro (Ray Head)</h3>
+                            <p>Ejecuta esto en el Nodo 1. Este nodo coordinará la inferencia distribuida y servirá el
+                                endpoint de la API.</p>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code><span class="comment"># En el Nodo 1, iniciar nodo maestro
+# Obtener la IP de la interfaz de alta velocidad
+# Usa la interfaz que aparece como "(Up)" en ibdev2netdev</span>
+export MN_IF_NAME=<span class="critical-iface">enp1s0f1np1</span>
+export VLLM_HOST_IP=$(ip -4 addr show $MN_IF_NAME | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+echo "Usando interfaz $MN_IF_NAME con IP $VLLM_HOST_IP"
+
+bash run_cluster.sh $VLLM_IMAGE $VLLM_HOST_IP --head ~/.cache/huggingface \
+-e VLLM_HOST_IP=$VLLM_HOST_IP \
+-e UCX_NET_DEVICES=$MN_IF_NAME \
+-e NCCL_SOCKET_IFNAME=$MN_IF_NAME \
+-e OMPI_MCA_btl_tcp_if_include=$MN_IF_NAME \
+-e GLOO_SOCKET_IFNAME=$MN_IF_NAME \
+-e TP_SOCKET_IFNAME=$MN_IF_NAME \
+-e RAY_memory_monitor_refresh_ms=0 \
+-e MASTER_ADDR=$VLLM_HOST_IP</code></pre>
+                            </div>
+
+                            <h3>Paso 4: Iniciar Nodo Trabajador (Ray Worker)</h3>
+                            <p>Conecta el Nodo 2 al cluster Ray como nodo trabajador para proporcionar recursos
+                                adicionales de GPU.</p>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code><span class="comment"># En el Nodo 2, unirse como trabajador
+# Establecer el nombre de la interfaz (la misma que en el Nodo 1)</span>
+export MN_IF_NAME=<span class="critical-iface">enp1s0f1np1</span>
+<span class="comment"># Obtener la propia IP del Nodo 2</span>
+export VLLM_HOST_IP=$(ip -4 addr show $MN_IF_NAME | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+
+<span class="comment"># IMPORTANTE: Establecer HEAD_NODE_IP a la IP del Nodo 1
+# Debes obtener este valor del Nodo 1 (ejecuta: echo $VLLM_HOST_IP en Nodo 1)</span>
+export HEAD_NODE_IP=<IP_NODO_1>
+echo "Worker IP: $VLLM_HOST_IP, conectando al nodo maestro en: $HEAD_NODE_IP"
+
+bash run_cluster.sh $VLLM_IMAGE $HEAD_NODE_IP --worker ~/.cache/huggingface \
+-e VLLM_HOST_IP=$VLLM_HOST_IP \
+-e UCX_NET_DEVICES=$MN_IF_NAME \
+-e NCCL_SOCKET_IFNAME=$MN_IF_NAME \
+-e OMPI_MCA_btl_tcp_if_include=$MN_IF_NAME \
+-e GLOO_SOCKET_IFNAME=$MN_IF_NAME \
+-e TP_SOCKET_IFNAME=$MN_IF_NAME \
+-e RAY_memory_monitor_refresh_ms=0 \
+-e MASTER_ADDR=$HEAD_NODE_IP</code></pre>
+                            </div>
+
+                            <h3>Paso 5: Servir Llama 3.3 70B</h3>
+                            <p>Una vez que el cluster esté listo, localiza el contenedor e inicia el servidor de vLLM:
+                            </p>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Bash</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code><span class="comment"># En el Nodo 1, encontrar el nombre del contenedor (será node-<número_aleatorio>)</span>
+export VLLM_CONTAINER=$(docker ps --format '{{.Names}}' | grep -E '^node-[0-9]+$')
+echo "Contenedor encontrado: $VLLM_CONTAINER"
+
+<span class="comment"># Iniciar servidor dentro del contenedor</span>
+docker exec -it $VLLM_CONTAINER /bin/bash -c '
+vllm serve meta-llama/Llama-3.3-70B-Instruct \
+--tensor-parallel-size 2 --max_model_len 2048'</code></pre>
+                            </div>
+
+                            <div class="warning-box">
+                                <strong>Despliegue de Llama 3.1 405B (Opcional)</strong>
+                                Para modelos de 405B, utiliza la versión cuantizada AWQ INT4 para que quepa en la
+                                memoria VRAM compartida.
+                                <br><br>
+                                <span class="code-comment"># Descargar modelo 405B cuantizado</span>
+                                <div class="code-container">
+                                    <div class="code-header">
+                                        <span class="lang">Bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                            Copiar</button>
+                                    </div>
+                                    <pre class="code-block"><code>huggingface-cli download hugging-quants/Meta-Llama-3.1-405B-Instruct-AWQ-INT4
+echo "Modelo 405B cuantizado descargado."</code></pre>
+                                </div>
+
+                                <span class="code-comment"># Lanzar servidor de inferencia 405B con parámetros
+                                    restringidos</span>
+                                <div class="code-container">
+                                    <div class="code-header">
+                                        <span class="lang">Bash</span>
+                                        <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                            Copiar</button>
+                                    </div>
+                                    <pre class="code-block"><code><span class="comment"># En el Nodo 1, lanzar con parámetros de memoria limitada</span>
+export VLLM_CONTAINER=$(docker ps --format '{{.Names}}' | grep -E '^node-[0-9]+$')
+echo "Lanzando 405B en: $VLLM_CONTAINER"
+
+docker exec -it $VLLM_CONTAINER /bin/bash -c '
+vllm serve hugging-quants/Meta-Llama-3.1-405B-Instruct \
+--tensor-parallel-size 2 --max_model_len 256 --gpu-memory-utilization 1.0 \
+--max-num-seqs 1 --max_num_batched_tokens 256'
+echo "Servidor vLLM para Llama 3.1 405B iniciado con parámetros restringidos."</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="guide-section" style="margin-top: 4rem;">
+                            <h2>Verificación y Pruebas</h2>
+                            <p>Para probar que el servidor está respondiendo correctamente a través de la red
+                                distribuida:</p>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <span class="lang">Curl</span>
+                                    <button class="copy-btn" onclick="copyCode(this)"><i data-lucide="copy"></i>
+                                        Copiar</button>
+                                </div>
+                                <pre class="code-block"><code>curl http://localhost:8000/v1/completions \
+-H "Content-Type: application/json" \
+-d '{
+  "model": "meta-llama/Llama-3.3-70B-Instruct",
+  "prompt": "Escribe un haiku sobre una GPU",
+  "max_tokens": 32,
+  "temperature": 0.7
+}'</code></pre>
+                            </div>
+
+                            <div class="glass-card" style="margin-top: 2rem;">
+                                <h3>Monitoreo y Validación</h3>
+                                <ul class="list-items">
+                                    <li><i data-lucide="monitor"></i> <strong>Ray Dashboard:</strong>
+                                        <code>http://&lt;IP_NODO_MAESTRO&gt;:8265</code>
+                                    </li>
+                                    <li><i data-lucide="heart"></i> <strong>Health Check:</strong>
+                                        <code>curl http://localhost:8000/health</code>
+                                    </li>
+                                    <li><i data-lucide="bar-chart-3"></i> <strong>Uso de VRAM:</strong>
+                                        <div class="code-container">
+                                            <div class="code-header">
+                                                <span class="lang">Bash</span>
+                                                <button class="copy-btn" onclick="copyCode(this)"><i
+                                                        data-lucide="copy"></i> Copiar</button>
+                                            </div>
+                                            <pre
+                                                class="code-block"><code>nvidia-smi --query-gpu=memory.used,memory.total --format=csv</code></pre>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <img src="logo-simarro.webp" alt="Logo" style="height: 120px; margin-bottom: 1rem; opacity: 1;">
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            &copy; 2026 IES Dr. Lluís Simarro - Centro de Excelencia.<br>
+            Guía técnica para Infraestructura Soberana de IA.
+        </p>
+    </footer>
+
+    <!-- Custom Logic -->
+    <script src="script.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Accordion Logic
+        function toggleAccordion(id) {
+            const item = document.getElementById(id);
+            const content = item.querySelector('.accordion-content');
+            const isActive = item.classList.contains('active');
+
+            // Close all items
+            document.querySelectorAll('.accordion-item').forEach(otherItem => {
+                otherItem.classList.remove('active');
+                otherItem.querySelector('.accordion-content').style.height = '0';
+            });
+
+            // If it wasn't active, open it
+            if (!isActive) {
+                item.classList.add('active');
+                content.style.height = content.scrollHeight + 'px';
+            }
+        }
+
+        // Initialize first item
+        window.onload = () => {
+            const firstItem = document.getElementById('item-prerrequisitos');
+            if (firstItem) {
+                const content = firstItem.querySelector('.accordion-content');
+                content.style.height = content.scrollHeight + 'px';
+            }
+        };
+
+        // Copy Code Function
+        function copyCode(button) {
+            const container = button.closest('.code-container');
+            const code = container.querySelector('code').innerText;
+
+            navigator.clipboard.writeText(code).then(() => {
+                const originalContent = button.innerHTML;
+                button.innerHTML = '<i data-lucide="check"></i> Copiado';
+                button.style.borderColor = '#76b900';
+                button.style.color = '#76b900';
+                lucide.createIcons();
+
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                    button.style.color = '#ccc';
+                    lucide.createIcons();
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -28,10 +28,10 @@ function reveal() {
 reveal();
 
 // Typing effect for hero lead
-const leadText = "Gestionamos el futuro de la educación mediante un Centro de Procesamiento de Datos local de alto rendimiento.";
 const heroLead = document.querySelector('.hero-lead');
 
 if (heroLead) {
+    const leadText = heroLead.textContent.trim();
     heroLead.textContent = '';
     let i = 0;
     function typeWriter() {
