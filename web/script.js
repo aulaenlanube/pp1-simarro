@@ -1,6 +1,36 @@
 // Initialize Lucide Icons
 lucide.createIcons();
 
+// Mobile Menu Logic
+const menuToggle = document.getElementById('menu-toggle');
+const mainNav = document.getElementById('main-nav');
+
+if (menuToggle && mainNav) {
+    const menuIcon = menuToggle.querySelector('i');
+
+    menuToggle.addEventListener('click', () => {
+        mainNav.classList.toggle('active');
+        const isActive = mainNav.classList.contains('active');
+
+        // Toggle icon
+        if (isActive) {
+            menuIcon.setAttribute('data-lucide', 'x');
+        } else {
+            menuIcon.setAttribute('data-lucide', 'menu');
+        }
+        lucide.createIcons();
+    });
+
+    // Close menu when clicking a link
+    mainNav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            mainNav.classList.remove('active');
+            menuIcon.setAttribute('data-lucide', 'menu');
+            lucide.createIcons();
+        });
+    });
+}
+
 // Scroll Progress Bar
 window.onscroll = function () {
     let winScroll = document.body.scrollTop || document.documentElement.scrollTop;

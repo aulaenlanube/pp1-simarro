@@ -299,12 +299,15 @@
                 <span class="brand-name">PP1-Simarro</span>
             </a>
         </div>
-        <nav>
+        <nav id="main-nav">
             <a href="index.html">INICIO</a>
             <a href="index.html#vision">VISIÓN</a>
             <a href="index.html#hardware">HARDWARE</a>
-            <a href="#" style="color: var(--accent-orange);">MANUAL SPARK</a>
+            <a href="#" class="active">MANUAL SPARK</a>
         </nav>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">
+            <i data-lucide="menu"></i>
+        </button>
     </header>
 
     <main>
@@ -922,9 +925,6 @@ echo "Servidor vLLM para Llama 3.1 405B iniciado con parámetros restringidos."<
     <!-- Custom Logic -->
     <script src="script.js"></script>
     <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
-
         // Accordion Logic
         function toggleAccordion(id) {
             const item = document.getElementById(id);

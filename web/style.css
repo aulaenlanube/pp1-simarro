@@ -70,6 +70,54 @@ header nav a:hover {
     color: var(--accent-orange);
 }
 
+header nav a.active {
+    color: var(--accent-orange);
+}
+
+/* Hamburguer Menu Button */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: var(--text-primary);
+    z-index: 1001;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    header nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        height: 100vh;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: var(--transition);
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
+        z-index: 1000;
+        gap: 2rem;
+    }
+
+    header nav.active {
+        right: 0;
+    }
+
+    header nav a {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+}
+
 .logo-container {
     display: flex;
     align-items: center;
