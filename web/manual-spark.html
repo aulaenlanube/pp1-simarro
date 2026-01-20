@@ -319,12 +319,79 @@
         <section class="hero-mini">
             <h1>Manual <span>Dual-Node</span> DGX Spark</h1>
             <p class="hero-lead">Configuración de inferencia distribuida mediante interconexión de 200Gb/s.</p>
+
+            <!-- Diagrama Animado de Interconexión -->
+            <div class="interconnect-visualization"
+                style="margin: 3rem auto; text-align: center; max-width: 1000px; padding: 0 5%;">
+                <div
+                    style="background: white; padding: 2rem; border-radius: 30px; border: 1px solid var(--glass-border); position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+                    <svg viewBox="0 0 800 200" style="width: 100%; max-width: 700px; height: auto;">
+                        <defs>
+                            <filter id="glowManual">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                        </defs>
+
+                        <!-- Nodo A -->
+                        <rect x="50" y="50" width="120" height="100" rx="15" fill="#f8f9fa" stroke="var(--accent-blue)"
+                            stroke-width="2" />
+                        <text x="110" y="105" text-anchor="middle" font-family="Outfit" font-weight="800"
+                            fill="var(--accent-blue)" font-size="20">SPARK A</text>
+                        <circle cx="110" cy="75" r="5" fill="var(--accent-blue)">
+                            <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" />
+                        </circle>
+
+                        <!-- Nodo B -->
+                        <rect x="630" y="50" width="120" height="100" rx="15" fill="#f8f9fa" stroke="var(--accent-blue)"
+                            stroke-width="2" />
+                        <text x="690" y="105" text-anchor="middle" font-family="Outfit" font-weight="800"
+                            fill="var(--accent-blue)" font-size="20">SPARK B</text>
+                        <circle cx="690" cy="75" r="5" fill="var(--accent-blue)">
+                            <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" begin="1s"
+                                repeatCount="indefinite" />
+                        </circle>
+
+                        <!-- Enlace Central -->
+                        <path d="M 170 100 L 630 100" stroke="var(--glass-border)" stroke-width="8"
+                            stroke-linecap="round" />
+                        <path d="M 170 100 L 630 100" stroke="var(--accent-blue)" stroke-width="2"
+                            stroke-dasharray="10,10" opacity="0.3" />
+
+                        <!-- Data Packets Flow -->
+                        <circle r="6" fill="var(--accent-blue)" filter="url(#glowManual)">
+                            <animateMotion path="M 170 100 L 630 100" dur="0.8s" repeatCount="indefinite" />
+                        </circle>
+                        <circle r="6" fill="var(--accent-blue)" filter="url(#glowManual)">
+                            <animateMotion path="M 170 100 L 630 100" dur="0.8s" begin="0.2s"
+                                repeatCount="indefinite" />
+                        </circle>
+                        <circle r="6" fill="var(--accent-blue)" filter="url(#glowManual)">
+                            <animateMotion path="M 630 100 L 170 100" dur="0.8s" begin="0.1s"
+                                repeatCount="indefinite" />
+                        </circle>
+                        <circle r="6" fill="var(--accent-blue)" filter="url(#glowManual)">
+                            <animateMotion path="M 630 100 L 170 100" dur="0.8s" begin="0.5s"
+                                repeatCount="indefinite" />
+                        </circle>
+
+                        <!-- Velocidad Label -->
+                        <text x="400" y="80" text-anchor="middle" font-family="Outfit" font-weight="800"
+                            fill="var(--text-primary)" font-size="16">ConnectX-7 RDMA</text>
+                        <text x="400" y="135" text-anchor="middle" font-family="Outfit" font-weight="800"
+                            fill="var(--accent-orange)" font-size="22">200 Gb/s</text>
+                    </svg>
+                </div>
+            </div>
         </section>
 
         <article class="manual-container">
             <div class="accordion">
                 <!-- Bloque 1: Prerrequisitos -->
-                <div class="accordion-item active" id="item-prerrequisitos">
+                <div class="accordion-item" id="item-prerrequisitos">
                     <button class="accordion-header" onclick="toggleAccordion('item-prerrequisitos')">
                         <h2><i data-lucide="list-checks"></i> Prerrequisitos</h2>
                         <div class="accordion-icon-box"><i data-lucide="chevron-down"></i></div>
@@ -957,13 +1024,11 @@ echo "Servidor vLLM para Llama 3.1 405B iniciado con parámetros restringidos."<
             }
         }
 
-        // Initialize first item
+        // Initialize accordion (all closed)
         window.onload = () => {
-            const firstItem = document.getElementById('item-prerrequisitos');
-            if (firstItem) {
-                const content = firstItem.querySelector('.accordion-content');
-                content.style.height = content.scrollHeight + 'px';
-            }
+            document.querySelectorAll('.accordion-content').forEach(content => {
+                content.style.height = '0';
+            });
         };
 
         // Copy Code Function
