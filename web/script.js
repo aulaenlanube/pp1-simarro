@@ -73,3 +73,26 @@ if (heroLead) {
     }
     setTimeout(typeWriter, 1000);
 }
+
+// Copy to clipboard function
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.innerText;
+    const button = event.currentTarget;
+    const originalContent = button.innerHTML;
+
+    navigator.clipboard.writeText(text).then(() => {
+        button.classList.add('success');
+        button.innerHTML = '<i data-lucide="check"></i> ¡Copiado!';
+        lucide.createIcons();
+
+        setTimeout(() => {
+            button.classList.remove('success');
+            button.innerHTML = originalContent;
+            lucide.createIcons();
+        }, 2000);
+    }).catch(err => {
+        console.error('Error al copiar: ', err);
+    });
+}
+

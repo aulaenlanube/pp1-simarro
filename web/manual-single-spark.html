@@ -78,6 +78,144 @@
         main {
             flex: 1;
         }
+
+        .manual-section {
+            margin-top: 3rem;
+            animation: fadeInUp 0.8s ease-out;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .header-icon {
+            width: 54px;
+            height: 54px;
+            background: var(--text-primary);
+            color: white;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-icon i {
+            width: 28px;
+            height: 28px;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .code-block-container {
+            background: #0d1117;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid #30363d;
+            margin-top: 1.5rem;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 24px;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .code-title {
+            color: #8b949e;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .copy-button {
+            background: rgba(240, 246, 252, 0.05);
+            border: 1px solid rgba(240, 246, 252, 0.1);
+            color: #c9d1d9;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        .copy-button:hover {
+            background: rgba(240, 246, 252, 0.1);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .copy-button.success {
+            background: #238636;
+            border-color: #2ea043;
+            color: white;
+        }
+
+        pre {
+            margin: 0;
+            padding: 24px;
+            overflow-x: auto;
+            color: #e6edf3;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        code {
+            font-family: inherit;
+        }
+
+        /* Syntax highlighting */
+        .c-comment {
+            color: #8b949e;
+        }
+
+        .c-keyword {
+            color: #ff7b72;
+        }
+
+        .c-string {
+            color: #a5d6ff;
+        }
+
+        .c-var {
+            color: #79c0ff;
+        }
+
+        .c-const {
+            color: #d2a8ff;
+        }
     </style>
 </head>
 
@@ -115,6 +253,159 @@
         </section>
 
         <article class="manual-container">
+            <section class="manual-section">
+                <div class="section-header">
+                    <div class="header-icon">
+                        <i data-lucide="container"></i>
+                    </div>
+                    <div>
+                        <h2>Build Personalizada para Docker</h2>
+                        <p>Configuración optimizada para vLLM en el hardware Grace-Hopper de la DGX Spark.</p>
+                    </div>
+                </div>
+
+                <div class="code-block-container">
+                    <div class="code-header">
+                        <span class="code-title"><i data-lucide="terminal"></i> Bash</span>
+                        <button class="copy-button" onclick="copyToClipboard('docker-build-cmd')">
+                            <i data-lucide="copy"></i> Copiar comando
+                        </button>
+                    </div>
+                    <pre id="docker-build-cmd"><code><span class="c-comment"># Activa BuildKit para paralelismo y caché</span>
+<span class="c-keyword">export</span> DOCKER_BUILDKIT=1
+
+docker build . \
+  -f docker/Dockerfile \
+  --target vllm-openai \
+  <span class="c-comment"># Plataforma nativa de la DGX Spark (CPU Grace es ARM)</span>
+  --platform linux/arm64 \
+  \
+  <span class="c-comment"># --- BLOQUE CUDA 13 ---</span>
+  --build-arg CUDA_VERSION=13.0.1 \
+  --build-arg BUILD_BASE_IMAGE=nvidia/cuda:13.0.1-devel-ubuntu22.04 \
+  \
+  <span class="c-comment"># --- BLOQUE ARQUITECTURA (CRÍTICO) ---</span>
+  <span class="c-comment"># Apuntamos SOLO a sm_121 para reducir tiempo de compilación y tamaño.</span>
+  <span class="c-comment"># Eliminamos compatibilidad con arquitecturas antiguas (Ampere/Hopper).</span>
+  --build-arg torch_cuda_arch_list=<span class="c-string">"12.1"</span> \
+  \
+  <span class="c-comment"># --- OPTIMIZACIÓN DE BUILD ---</span>
+  <span class="c-comment"># Usa los 20 cores de la CPU Grace para compilar (por defecto docker usa menos)</span>
+  --build-arg MAX_JOBS=20 \
+  <span class="c-comment"># Saltamos chequeos de integridad de wheels para ganar velocidad</span>
+  --build-arg RUN_WHEEL_CHECK=false \
+  <span class="c-comment"># Importante: vLLM suele necesitar definir esto explícitamente en builds custom</span>
+  --build-arg VLLM_TARGET_DEVICE=cuda \
+  \
+  -t vllm/vllm-openai:gb10-cu13-sm121</code></pre>
+                </div>
+            </section>
+
+            <section class="manual-section">
+                <div class="section-header">
+                    <div class="header-icon" style="background: var(--accent-blue);">
+                        <i data-lucide="layers"></i>
+                    </div>
+                    <div>
+                        <h2>Despliegue con Docker Compose</h2>
+                        <p>Orquestación de vLLM y Open WebUI para una interfaz de chat completa.</p>
+                    </div>
+                </div>
+
+                <div class="code-block-container">
+                    <div class="code-header">
+                        <span class="code-title"><i data-lucide="file-code"></i> docker-compose.yml</span>
+                        <button class="copy-button" onclick="copyToClipboard('docker-compose-yaml')">
+                            <i data-lucide="copy"></i> Copiar YAML
+                        </button>
+                    </div>
+                    <pre id="docker-compose-yaml"><code><span class="c-keyword">version:</span> <span class="c-string">"3.8"</span>
+
+<span class="c-keyword">services:</span>
+  <span class="c-keyword">vllm:</span>
+    <span class="c-keyword">image:</span> <span class="c-string">vllm/vllm-openai:gb10-cu13-sm121</span>
+    <span class="c-keyword">container_name:</span> <span class="c-string">vllm_server</span>
+    <span class="c-keyword">restart:</span> <span class="c-string">unless-stopped</span>
+    <span class="c-comment"># IPC host es preferible a shm_size para PyTorch/NCCL</span>
+    <span class="c-keyword">ipc:</span> <span class="c-string">host</span>
+    <span class="c-keyword">deploy:</span>
+      <span class="c-keyword">resources:</span>
+        <span class="c-keyword">reservations:</span>
+          <span class="c-keyword">devices:</span>
+            - <span class="c-keyword">driver:</span> <span class="c-string">nvidia</span>
+              <span class="c-keyword">count:</span> <span class="c-string">all</span> <span class="c-comment"># Usa todas las GPUs disponibles</span>
+              <span class="c-keyword">capabilities:</span> [<span class="c-string">gpu</span>]
+    <span class="c-keyword">environment:</span>
+      - <span class="c-var">HF_TOKEN</span>=${HF_TOKEN}
+      <span class="c-comment"># Optimización para evitar fragmentación de memoria en cargas altas</span>
+      - <span class="c-var">PYTORCH_CUDA_ALLOC_CONF</span>=expandable_segments:True
+      - <span class="c-var">VLLM_USE_FLASHINFER_MOE_FP8</span>=1
+      - <span class="c-var">VLLM_FLASHINFER_MOE_BACKEND</span>=latency
+      <span class="c-comment"># - VLLM_ATTENTION_BACKEND=FLASH_ATTN # Descomentar si hay problemas con xformers/flashinfer</span>
+      <span class="c-comment"># Forzar descarga a directorio persistente</span>
+      - <span class="c-var">HF_HOME</span>=/root/.cache/huggingface
+    <span class="c-keyword">volumes:</span>
+      - <span class="c-string">${HOME}/.cache/huggingface:/root/.cache/huggingface</span>
+    <span class="c-keyword">command:</span>
+      - <span class="c-string">"Qwen/Qwen3-Next-80B-A3B-Instruct-FP8"</span>
+      - <span class="c-string">"--served-model-name=qwen3-next-80b-fp8"</span>
+      <span class="c-comment"># Inferencia y Hardware</span>
+      - <span class="c-string">"--quantization=fp8"</span>
+      - <span class="c-string">"--dtype=bfloat16"</span>
+      - <span class="c-string">"--kv-cache-dtype=fp8"</span>
+      <span class="c-comment"># Optimización de Memoria</span>
+      - <span class="c-string">"--gpu-memory-utilization=0.90"</span> <span class="c-comment"># Bajado ligeramente para dar espacio al Prefix Caching</span>
+      - <span class="c-string">"--max-model-len=8192"</span>
+      - <span class="c-string">"--max-num-seqs=64"</span> <span class="c-comment"># Aumentado ligeramente para aprovechar mejor el batching</span>
+      <span class="c-comment"># Optimización de Rendimiento (NUEVO)</span>
+      - <span class="c-string">"--enable-prefix-caching"</span> <span class="c-comment"># VITAL para chat/historial</span>
+      - <span class="c-string">"--enable-chunked-prefill"</span> <span class="c-comment"># Mejora latencia en prompts largos</span>
+      <span class="c-comment"># Red</span>
+      - <span class="c-string">"--host=0.0.0.0"</span>
+      - <span class="c-string">"--port=8000"</span>
+      <span class="c-comment"># Si tienes múltiples GPUs, define el paralelismo explícitamente si vLLM falla al detectarlo</span>
+      <span class="c-comment"># - "--tensor-parallel-size=2"</span>
+    <span class="c-keyword">ports:</span>
+      - <span class="c-string">"8000:8000"</span>
+    <span class="c-keyword">healthcheck:</span>
+      <span class="c-comment"># Comprueba si el modelo responde antes de levantar el WebUI</span>
+      <span class="c-keyword">test:</span> [<span class="c-string">"CMD-SHELL"</span>, <span class="c-string">"curl -f http://localhost:8000/health || exit 1"</span>]
+      <span class="c-keyword">interval:</span> <span class="c-string">10s</span>
+      <span class="c-keyword">timeout:</span> <span class="c-string">10s</span>
+      <span class="c-keyword">retries:</span> <span class="c-const">30</span> <span class="c-comment"># Modelos grandes (80B) tardan en cargar, damos margen</span>
+    <span class="c-keyword">logging:</span>
+      <span class="c-keyword">driver:</span> <span class="c-string">"json-file"</span>
+      <span class="c-keyword">options:</span>
+        <span class="c-keyword">max-size:</span> <span class="c-string">"50m"</span>
+        <span class="c-keyword">max-file:</span> <span class="c-string">"3"</span>
+
+  <span class="c-keyword">open-webui:</span>
+    <span class="c-keyword">image:</span> <span class="c-string">ghcr.io/open-webui/open-webui:main</span>
+    <span class="c-keyword">container_name:</span> <span class="c-string">open_webui</span>
+    <span class="c-keyword">restart:</span> <span class="c-string">unless-stopped</span>
+    <span class="c-keyword">depends_on:</span>
+      <span class="c-keyword">vllm:</span>
+        <span class="c-keyword">condition:</span> <span class="c-string">service_healthy</span> <span class="c-comment"># Espera a que vLLM esté OK</span>
+    <span class="c-keyword">environment:</span>
+      - <span class="c-var">OPENAI_API_BASE_URL</span>=http://vllm:8000/v1
+      - <span class="c-var">OPENAI_API_KEY</span>=sk-no-key-required
+      - <span class="c-var">WEBUI_SECRET_KEY</span>=${WEBUI_SECRET_KEY:-cambiar-esta-clave-secreta}
+      - <span class="c-var">ENABLE_OLLAMA_API</span>=false
+      <span class="c-comment"># Optimización WebUI</span>
+      - <span class="c-var">GLOBAL_LOG_LEVEL</span>=info
+    <span class="c-keyword">ports:</span>
+      - <span class="c-string">"3000:8080"</span>
+    <span class="c-keyword">volumes:</span>
+      - <span class="c-string">open-webui:/app/backend/data</span>
+    <span class="c-keyword">extra_hosts:</span>
+      - <span class="c-string">"host.docker.internal:host-gateway"</span> <span class="c-comment"># Útil si necesitas conectar servicios del host</span>
+
+<span class="c-keyword">volumes:</span>
+  <span class="c-keyword">open-webui:</span></code></pre>
+                </div>
+            </section>
+
+
             <div class="construction-box">
                 <i data-lucide="hard-hat" class="construction-icon"></i>
                 <h2 style="color: var(--text-primary); margin-bottom: 1rem;">Sección en Construcción</h2>
