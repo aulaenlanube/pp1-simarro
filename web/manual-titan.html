@@ -180,14 +180,14 @@
                     <i data-lucide="hard-drive" class="spec-icon"></i>
                     <div class="spec-text">
                         <h4>Gráficos / VRAM</h4>
-                        <p>4x NVIDIA RTX PRO 6000 Blackwell (384 GB VRAM)</p>
+                        <p>3x NVIDIA RTX 6000 PRO Max-Q (288 GB VRAM)</p>
                     </div>
                 </div>
                 <div class="spec-item">
                     <i data-lucide="layers" class="spec-icon"></i>
                     <div class="spec-text">
                         <h4>Memoria RAM</h4>
-                        <p>1 TB DDR5 ECC (Octa-Channel)</p>
+                        <p>512 GB DDR5 ECC (Octa-Channel)</p>
                     </div>
                 </div>
                 <div class="spec-item">
@@ -199,15 +199,96 @@
                 </div>
             </div>
 
-            <div class="construction-box">
-                <i data-lucide="hard-hat" class="construction-icon"></i>
-                <h2 style="color: var(--text-primary); margin-bottom: 1rem;">Sección en Construcción</h2>
-                <p style="color: var(--text-secondary); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
-                    Estamos documentando los procedimientos específicos para el entrenamiento distribuido y la
-                    orquestación de LLMs en el nodo Titán. Próximamente disponible.
+            <div class="stack-section" style="margin-top: 4rem;">
+                
+                <!-- SECCIÓN 1: PROXMOX -->
+                <h2 style="margin-bottom: 1.5rem; font-weight: 800; letter-spacing: -1px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;">1. Infraestructura Base y Gobernanza</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.6;">
+                    El servidor Titán no opera como un monolito estático. Para maximizar la rentabilidad de su enorme capacidad computacional, implementamos una capa de hipervisor de nivel empresarial que nos otorga el control absoluto de la topología.
                 </p>
-                <div style="margin-top: 2.5rem;">
-                    <a href="index.html" class="cta-button" style="background: var(--text-primary);">
+
+                <div class="glass-card" style="border-left: 4px solid #E57000; padding: 2.5rem; margin-bottom: 4rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                        <div>
+                            <h3 class="card-title" style="margin-bottom: 0.5rem; font-size: 1.5rem;">Proxmox Virtual Environment (VE) 9.1.1</h3>
+                            <span style="background: rgba(229, 112, 0, 0.1); color: #E57000; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 0.8rem;">HIPERVISOR BARE-METAL</span>
+                        </div>
+                        <i data-lucide="server-cog" style="color: #E57000; width: 36px; height: 36px;"></i>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.2rem; font-size: 1rem; line-height: 1.6;">
+                        <strong>Justificación:</strong> Instalar Proxmox directamente sobre el hardware (bare-metal) nos permite "jugar" con la asignación de recursos a nuestro antojo. En lugar de limitar las 3 GPUs RTX 6000 a un único entorno, Proxmox nos permite aislar cargas de trabajo y aprovisionar máquinas virtuales (VMs) específicas para investigadores o equipos de estudiantes sin que interfieran entre sí.
+                    </p>
+                    <ul style="color: var(--text-secondary); margin-left: 1.5rem; font-size: 0.95rem; line-height: 1.6;">
+                        <li style="margin-bottom: 0.5rem;"><strong>PCIe Passthrough (IOMMU/VT-d):</strong> Asignación directa y exclusiva de las GPUs físicas a diferentes VMs. Al inyectar la GPU sin capas de emulación intermedias, el entorno virtual alcanza un rendimiento equivalente al nativo (Zero-Overhead), crucial para aprovechar los 288 GB de VRAM.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Particionamiento de CPU/RAM:</strong> Los 96 núcleos del <em>Threadripper PRO</em> y los 512 GB de RAM ECC operan bajo una política de distribución dinámica (Thin/Thick Provisioning), asegurando que ninguna VM sature el ancho de banda del <em>Octa-Channel</em> completo a menos que esté autorizado.</li>
+                        <li><strong>Clusters Efímeros:</strong> Posibilidad de desplegar laboratorios de Deep Learning bajo demanda y destruirlos o pausarlos ("Snapshots") cuando finaliza un experimento, optimizando el consumo energético.</li>
+                    </ul>
+                </div>
+
+                <!-- SECCIÓN 2: SOFTWARE PASO A PASO -->
+                <h2 style="margin-bottom: 1.5rem; font-weight: 800; letter-spacing: -1px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;">2. Despliegue del Stack Científico (Paso a Paso)</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2.5rem; font-size: 1.1rem; line-height: 1.6;">
+                    Una vez provisionada la Máquina Virtual a través de Proxmox con acceso directo a las GPUs solicitadas, el aprovisionamiento del entorno lógico sigue un flujo estricto para garantizar la máxima eficiencia computacional, evitando cuellos de botella por dependencias desactualizadas.
+                </p>
+
+                <div style="display: flex; flex-direction: column; gap: 2rem; margin-bottom: 4rem;">
+                    
+                    <!-- PASO 1 -->
+                    <div class="glass-card" style="border-left: 4px solid #76b900; padding: 2rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                            <h3 class="card-title" style="margin-bottom: 0; font-size: 1.3rem;">Paso 1: Entorno de Ejecución y Drivers Base</h3>
+                            <i data-lucide="layers" style="color: #76b900; width: 28px; height: 28px;"></i>
+                        </div>
+                        <ul style="color: var(--text-secondary); margin-left: 1.5rem; font-size: 0.95rem; line-height: 1.6;">
+                            <li style="margin-bottom: 1rem;"><strong>Ubuntu Server 24.04 LTS:</strong> Actúa como el sistema operativo huésped oficial. <em>Justificación:</em> Ofrece el mayor soporte a nivel de comunidad e integraciones validadas por NVIDIA (drivers empaquetados) y estabilidad empresarial a largo plazo.</li>
+                            <li style="margin-bottom: 1rem;"><strong>NVIDIA Driver 550.x + CUDA Toolkit 13.2:</strong> Capa de comunicación de bajo nivel. <em>Justificación:</em> Es el requisito indispensable para operar correctamente la arquitectura computacional de las RTX 6000 PRO Max-Q y acceder a sus Tensor Cores. Integrado con <em>cuDNN 9.x</em> para aceleración nativa.</li>
+                            <li><strong>Docker Engine (v26.x) + NVIDIA Container Toolkit:</strong> Entorno de virtualización lógica. <em>Justificación:</em> Instalar dependencias globales de Python directamente en el OS genera conflictos catastróficos. Al usar contenedores con acceso PCIe, aislamos los experimentos garantizando reproducibilidad absoluta.</li>
+                        </ul>
+                    </div>
+
+                    <!-- PASO 2 -->
+                    <div class="glass-card" style="border-left: 4px solid #EE4C2C; padding: 2rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                            <h3 class="card-title" style="margin-bottom: 0; font-size: 1.3rem;">Paso 2: Frameworks de Entrenamiento y Fine-Tuning</h3>
+                            <i data-lucide="brain-circuit" style="color: #EE4C2C; width: 28px; height: 28px;"></i>
+                        </div>
+                        <ul style="color: var(--text-secondary); margin-left: 1.5rem; font-size: 0.95rem; line-height: 1.6;">
+                            <li style="margin-bottom: 1rem;"><strong>PyTorch (con FlashAttention-2):</strong> Motor de cómputo tensorial. <em>Justificación:</em> FlashAttention-2 es innegociable; optimiza matemáticamente cómo los LLMs calculan la atención, reduciendo exponencialmente el consumo de los 288 GB de VRAM totales durante entrenamientos de contexto extendido.</li>
+                            <li style="margin-bottom: 1rem;"><strong>DeepSpeed o Ray:</strong> Orquestador distribuido. <em>Justificación:</em> Fundamental para metodologías <em>ZeRO (Zero Redundancy Optimizer)</em>. DeepSpeed fragmenta inteligentemente los gradientes entre las 3 GPUs balanceando la carga, permitiéndonos re-entrenar modelos masivos que no cabrían en una sola tarjeta.</li>
+                            <li><strong>Unsloth & Axolotl:</strong> Entornos de Parameter-Efficient Fine-Tuning (PEFT). <em>Justificación:</em> Orquestan procesos complejos de IA Generativa. Aceleran la implementación de métodos matemáticos como LoRA, QLoRA y alineamientos (DPO/RLHF), usando hasta un 60% menos de memoria en las interacciones y doblando la velocidad computacional.</li>
+                        </ul>
+                    </div>
+
+                    <!-- PASO 3 -->
+                    <div class="glass-card" style="border-left: 4px solid #3b82f6; padding: 2rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                            <h3 class="card-title" style="margin-bottom: 0; font-size: 1.3rem;">Paso 3: Datos Sintéticos y Ecosistema RAG</h3>
+                            <i data-lucide="file-json-2" style="color: #3b82f6; width: 28px; height: 28px;"></i>
+                        </div>
+                        <ul style="color: var(--text-secondary); margin-left: 1.5rem; font-size: 0.95rem; line-height: 1.6;">
+                            <li style="margin-bottom: 1rem;"><strong>LangChain / Distilabel / LlamaIndex:</strong> Motores de flujos e inyección técnica. <em>Justificación:</em> Encargados principal de la manipulación de corpus masivos, transformando PDFs y material crudo del centro en "datasets instruccionales", automatizando la ingesta de conocimiento a la IA.</li>
+                            <li style="margin-bottom: 1rem;"><strong>Sentence Transformers (Modelos BGE-M3):</strong> Traductores de embedding semántico. <em>Justificación:</em> Indispensables para proyectar textos a un espacio latente de alta densificación (vectorizado), permitiendo representar similitudes en una lógica multidimensional estandarizada.</li>
+                            <li><strong>Qdrant o ChromaDB:</strong> Bases de datos vectoriales. <em>Justificación:</em> Almacenan de manera altamente estructurada y buscan los embeddings generados a altísima velocidad mediante comparaciones de simillitud cósena o MTEB (búsqueda asimétrica para RAG).</li>
+                        </ul>
+                    </div>
+
+                    <!-- PASO 4 -->
+                    <div class="glass-card" style="border-left: 4px solid #8b5cf6; padding: 2rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                            <h3 class="card-title" style="margin-bottom: 0; font-size: 1.3rem;">Paso 4: MLOps, Telemetría e Inferencia</h3>
+                            <i data-lucide="activity" style="color: #8b5cf6; width: 28px; height: 28px;"></i>
+                        </div>
+                        <ul style="color: var(--text-secondary); margin-left: 1.5rem; font-size: 0.95rem; line-height: 1.6;">
+                            <li style="margin-bottom: 1rem;"><strong>vLLM o Text Generation Inference (TGI):</strong> Motores backend de Serving. <em>Justificación:</em> Sirven los modelos procesando la memoria KV Caché con algoritmos como <em>PagedAttention</em> y agrupamiento de respuestas en base continua (<em>Continuous Batching</em>), multiplicando el rendimiento predictivo (throughput) en producción.</li>
+                            <li style="margin-bottom: 1rem;"><strong>Weights & Biases (W&B) / MLflow:</strong> Hub operativo de Machine Learning (MLOps). <em>Justificación:</em> Indispensables para graficar la función de pérdida (Loss Tracking) a lo largo del tiempo, trazando hiperparámetros y alertando de condiciones perjudiciales de sobreajuste (Overfitting).</li>
+                            <li><strong>NVIDIA DCGM + Prometheus + Grafana:</strong> Stack de Monitorización Físico. <em>Justificación:</em> Las cargas de inferencia y las 3 GPUs RTX consumiendo al máximo estresan el equipo drásticamente. El stack de telemetría recopila y alerta ante estrangulamientos térmicos, vatajes e ineficiencias críticas del bus PCIe.</li>
+                        </ul>
+                    </div>
+
+                </div>
+                
+                <div style="text-align: center; margin-top: 1rem;">
+                    <a href="index.html" class="cta-button">
                         <i data-lucide="arrow-left"></i> Volver al Inicio
                     </a>
                 </div>
