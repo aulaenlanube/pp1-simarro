@@ -129,6 +129,75 @@
             font-size: 1rem;
             color: var(--text-primary);
         }
+
+        /* 3D Elegant Hardware Image Hover Effect */
+        .hw-image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            margin: 0 auto 3.5rem;
+            max-width: 700px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            background: linear-gradient(135deg, rgba(20,20,20,1) 0%, rgba(40,40,40,1) 100%);
+        }
+
+        .titan-hardware-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            filter: contrast(105%) brightness(1);
+            transform-origin: center center;
+            opacity: 1;
+        }
+
+        .hw-image-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(118, 185, 0, 0.15), 0 0 40px rgba(229, 112, 0, 0.1);
+            border-color: rgba(118, 185, 0, 0.3);
+        }
+
+        .hw-image-container:hover .titan-hardware-img {
+            transform: scale(1.04);
+            filter: grayscale(0%) contrast(115%) brightness(1.05);
+            opacity: 1;
+        }
+
+        .hw-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 3rem 2rem 1.5rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 30%, transparent 100%);
+            color: white;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .hw-image-container:hover .hw-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hw-overlay h3 {
+            color: #76b900;
+            margin-bottom: 0.3rem;
+            font-weight: 800;
+            font-size: 1.4rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+
+        .hw-overlay p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            color: rgba(255,255,255,0.85);
+        }
     </style>
 </head>
 
@@ -167,6 +236,14 @@
         </section>
 
         <article class="manual-container">
+            
+            <div class="hw-image-container">
+                <img src="titan.jpg" alt="Interior Nodo Titán con RTX 6000" class="titan-hardware-img">
+                <div class="hw-overlay">
+                    <h3>Array Triple NVIDIA RTX 6000 PRO Max-Q</h3>
+                </div>
+            </div>
+
             <h2 style="margin-bottom: 2rem; font-weight: 800; letter-spacing: -1px;">Especificaciones del Sistema</h2>
             <div class="spec-grid">
                 <div class="spec-item">
