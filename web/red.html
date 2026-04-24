@@ -134,6 +134,7 @@
         @keyframes flow40g { to { stroke-dashoffset: -24; } }
         @keyframes flowAi { to { stroke-dashoffset: -28; } }
         @keyframes flow10g { to { stroke-dashoffset: -22; } }
+        @keyframes flowDual { to { stroke-dashoffset: -18; } }
         @keyframes ledPulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
@@ -160,6 +161,10 @@
         .link-10g {
             stroke-dasharray: 3 5;
             animation: flow10g 1.3s linear infinite;
+        }
+        .link-dual {
+            stroke-dasharray: 3 3;
+            animation: flowDual 0.9s linear infinite;
         }
 
         /* ============= LAYER CARDS ============= */
@@ -756,9 +761,10 @@
                         <text x="949.5" y="296" fill="#76b900" font-size="6.5" font-weight="700" text-anchor="middle">10G</text>
                         <text x="949.5" y="309" fill="#64748b" font-size="6" text-anchor="middle">Spark</text>
 
-                        <!-- DUAL bracket 1 -->
-                        <path d="M 912.5 320 C 912.5 335, 949.5 335, 949.5 320" stroke="#22d3ee" stroke-width="1" fill="none" opacity="0.55"/>
-                        <text x="931" y="347" fill="#22d3ee" font-size="7" font-weight="700" text-anchor="middle" opacity="0.8" letter-spacing="1">DUAL</text>
+                        <!-- DUAL bracket 1 (ConnectX-7 200G, animated) -->
+                        <path d="M 912.5 320 C 912.5 340, 949.5 340, 949.5 320" stroke="#22d3ee" stroke-width="1.4" fill="none" opacity="0.6"/>
+                        <path d="M 912.5 320 C 912.5 340, 949.5 340, 949.5 320" stroke="#a5f3fc" stroke-width="1" fill="none" opacity="0.9" class="link-dual"/>
+                        <text x="931" y="355" fill="#22d3ee" font-size="7" font-weight="700" text-anchor="middle" opacity="0.95" letter-spacing="1">DUAL · 200G</text>
 
                         <!-- SPARK 3 (pair 2) -->
                         <rect x="983" y="235" width="35" height="85" rx="4" fill="#1e293b" stroke="#76b900" stroke-width="1.2"/>
@@ -780,9 +786,10 @@
                         <text x="1037.5" y="296" fill="#76b900" font-size="6.5" font-weight="700" text-anchor="middle">10G</text>
                         <text x="1037.5" y="309" fill="#64748b" font-size="6" text-anchor="middle">Spark</text>
 
-                        <!-- DUAL bracket 2 -->
-                        <path d="M 1000.5 320 C 1000.5 335, 1037.5 335, 1037.5 320" stroke="#22d3ee" stroke-width="1" fill="none" opacity="0.55"/>
-                        <text x="1019" y="347" fill="#22d3ee" font-size="7" font-weight="700" text-anchor="middle" opacity="0.8" letter-spacing="1">DUAL</text>
+                        <!-- DUAL bracket 2 (ConnectX-7 200G, animated) -->
+                        <path d="M 1000.5 320 C 1000.5 340, 1037.5 340, 1037.5 320" stroke="#22d3ee" stroke-width="1.4" fill="none" opacity="0.6"/>
+                        <path d="M 1000.5 320 C 1000.5 340, 1037.5 340, 1037.5 320" stroke="#a5f3fc" stroke-width="1" fill="none" opacity="0.9" class="link-dual"/>
+                        <text x="1019" y="355" fill="#22d3ee" font-size="7" font-weight="700" text-anchor="middle" opacity="0.95" letter-spacing="1">DUAL · 200G</text>
 
                         <!-- SPARK 5 (pair 3) -->
                         <rect x="1071" y="235" width="35" height="85" rx="4" fill="#1e293b" stroke="#76b900" stroke-width="1.2"/>
@@ -804,9 +811,10 @@
                         <text x="1125.5" y="296" fill="#76b900" font-size="6.5" font-weight="700" text-anchor="middle">10G</text>
                         <text x="1125.5" y="309" fill="#64748b" font-size="6" text-anchor="middle">Spark</text>
 
-                        <!-- DUAL bracket 3 -->
-                        <path d="M 1088.5 320 C 1088.5 335, 1125.5 335, 1125.5 320" stroke="#22d3ee" stroke-width="1" fill="none" opacity="0.55"/>
-                        <text x="1107" y="347" fill="#22d3ee" font-size="7" font-weight="700" text-anchor="middle" opacity="0.8" letter-spacing="1">DUAL</text>
+                        <!-- DUAL bracket 3 (ConnectX-7 200G, animated) -->
+                        <path d="M 1088.5 320 C 1088.5 340, 1125.5 340, 1125.5 320" stroke="#22d3ee" stroke-width="1.4" fill="none" opacity="0.6"/>
+                        <path d="M 1088.5 320 C 1088.5 340, 1125.5 340, 1125.5 320" stroke="#a5f3fc" stroke-width="1" fill="none" opacity="0.9" class="link-dual"/>
+                        <text x="1107" y="355" fill="#22d3ee" font-size="7" font-weight="700" text-anchor="middle" opacity="0.95" letter-spacing="1">DUAL · 200G</text>
                     </g>
 
                     <!-- ====== 10GbE UPLINKS from compute devices to AI Aggregator ====== -->
