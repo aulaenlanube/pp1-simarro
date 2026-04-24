@@ -130,15 +130,10 @@
         }
 
         /* ============= SVG Animations (lightweight, CSS-only) ============= */
-        @keyframes flow100g {
-            to { stroke-dashoffset: -30; }
-        }
-        @keyframes flow40g {
-            to { stroke-dashoffset: -24; }
-        }
-        @keyframes flowAi {
-            to { stroke-dashoffset: -28; }
-        }
+        @keyframes flow100g { to { stroke-dashoffset: -30; } }
+        @keyframes flow40g { to { stroke-dashoffset: -24; } }
+        @keyframes flowAi { to { stroke-dashoffset: -28; } }
+        @keyframes flow10g { to { stroke-dashoffset: -22; } }
         @keyframes ledPulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
@@ -161,6 +156,10 @@
         .link-ai {
             stroke-dasharray: 6 6;
             animation: flowAi 1.1s linear infinite;
+        }
+        .link-10g {
+            stroke-dasharray: 3 5;
+            animation: flow10g 1.3s linear infinite;
         }
 
         /* ============= LAYER CARDS ============= */
@@ -370,6 +369,7 @@
         .port-chip.p-100 { background: rgba(34, 211, 238, 0.12); color: #0891b2; }
         .port-chip.p-40 { background: rgba(245, 158, 11, 0.12); color: #b45309; }
         .port-chip.p-25 { background: rgba(139, 92, 246, 0.12); color: #6d28d9; }
+        .port-chip.p-10 { background: rgba(118, 185, 0, 0.14); color: #4d7500; }
         .port-chip.p-1 { background: rgba(118, 185, 0, 0.12); color: #4d7500; }
 
         /* ============= NEXUS DEEP-DIVE ============= */
@@ -629,7 +629,7 @@
         <article class="wide-container">
 
             <!-- ============================= -->
-            <!-- TOPOLOGY SVG (minimalista)    -->
+            <!-- TOPOLOGY SVG                  -->
             <!-- ============================= -->
             <div class="topology-wrap">
                 <div class="topo-header">
@@ -638,10 +638,11 @@
                         <div class="lg-item"><span class="lg-dot" style="background: var(--c-100g);"></span>200 G vPC/LACP</div>
                         <div class="lg-item"><span class="lg-dot" style="background: var(--c-ai);"></span>200 G IA</div>
                         <div class="lg-item"><span class="lg-dot" style="background: var(--c-40g);"></span>40 G Uplink</div>
+                        <div class="lg-item"><span class="lg-dot" style="background: var(--c-1g);"></span>10 GbE</div>
                     </div>
                 </div>
 
-                <svg id="topo-svg" viewBox="0 0 1200 640" preserveAspectRatio="xMidYMid meet" aria-label="Diagrama de topología de red">
+                <svg id="topo-svg" viewBox="0 0 1200 740" preserveAspectRatio="xMidYMid meet" aria-label="Diagrama de topología de red">
                     <defs>
                         <linearGradient id="grad-100g" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="#22d3ee"/>
@@ -656,8 +657,9 @@
                     <!-- Section labels -->
                     <g opacity="0.55" class="svg-node" style="animation-delay: 0.05s;">
                         <text x="40" y="40" fill="#22d3ee" font-size="10" font-weight="700" letter-spacing="2">PERÍMETRO</text>
-                        <text x="1160" y="40" fill="#ec4899" font-size="10" font-weight="700" letter-spacing="2" text-anchor="end">NODO DE IA</text>
-                        <text x="40" y="440" fill="#f59e0b" font-size="10" font-weight="700" letter-spacing="2">ACCESO</text>
+                        <text x="1160" y="40" fill="#ec4899" font-size="10" font-weight="700" letter-spacing="2" text-anchor="end">AGREGADOR IA</text>
+                        <text x="830" y="215" fill="#76b900" font-size="10" font-weight="700" letter-spacing="2">CÓMPUTO IA</text>
+                        <text x="40" y="540" fill="#f59e0b" font-size="10" font-weight="700" letter-spacing="2">ACCESO</text>
                     </g>
 
                     <!-- MikroTik Gateway -->
@@ -670,14 +672,39 @@
                         <text x="200" y="134" fill="#22d3ee" font-size="9.5" font-weight="700" text-anchor="middle" letter-spacing="1">12×25G + 2×100G</text>
                     </g>
 
-                    <!-- AI Node -->
+                    <!-- ====== MACRO-LAN / INTERNET ====== -->
+                    <g class="svg-node" style="animation-delay: 0.08s;">
+                        <!-- Pill background (two-line: MACRO-LAN + INTERNET) -->
+                        <rect x="135" y="3" width="130" height="36" rx="18" fill="#0c1e4a" stroke="#60a5fa" stroke-width="1.2"/>
+                        <!-- Globe icon -->
+                        <g transform="translate(155, 21)" stroke="#60a5fa" stroke-width="0.8" fill="none" stroke-linecap="round">
+                            <circle cx="0" cy="0" r="8"/>
+                            <ellipse cx="0" cy="0" rx="8" ry="3.2"/>
+                            <ellipse cx="0" cy="0" rx="3.5" ry="8"/>
+                            <line x1="-8" y1="0" x2="8" y2="0"/>
+                        </g>
+                        <!-- Subtle pulsing node (signals live WAN) -->
+                        <circle cx="250" cy="13" r="2.5" fill="#22d3ee" class="led"/>
+                        <!-- Two-line label -->
+                        <text x="215" y="19" fill="white" font-size="10.5" font-weight="700" text-anchor="middle" letter-spacing="0.5">MACRO-LAN</text>
+                        <text x="215" y="32" fill="#93c5fd" font-size="7.5" font-weight="700" text-anchor="middle" letter-spacing="1.8">INTERNET</text>
+
+                        <!-- Connection line from MACRO-LAN down to gateway top -->
+                        <line x1="200" y1="39" x2="200" y2="60"
+                              stroke="#60a5fa" stroke-width="1.8" stroke-dasharray="3 3" opacity="0.9" stroke-linecap="round"/>
+                        <!-- Arrow head landing on gateway -->
+                        <path d="M 196 56 L 200 60 L 204 56"
+                              stroke="#60a5fa" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                    </g>
+
+                    <!-- AI Aggregator Switch -->
                     <g class="svg-node" style="animation-delay: 0.15s;">
                         <rect x="880" y="60" width="240" height="90" rx="12" fill="#1e293b" stroke="#ec4899" stroke-width="1.5"/>
                         <rect x="880" y="60" width="240" height="4" fill="#ec4899"/>
                         <circle cx="900" cy="80" r="3.5" fill="#ec4899" class="led"/>
-                        <text x="1000" y="93" fill="white" font-size="15" font-weight="700" text-anchor="middle">Nodo de IA</text>
-                        <text x="1000" y="114" fill="#94a3b8" font-size="10.5" text-anchor="middle">Spark / Titán + NVMe</text>
-                        <text x="1000" y="134" fill="#ec4899" font-size="9.5" font-weight="700" text-anchor="middle" letter-spacing="1">2×100G DIRECTO</text>
+                        <text x="1000" y="93" fill="white" font-size="15" font-weight="700" text-anchor="middle">Switch Agregador IA</text>
+                        <text x="1000" y="114" fill="#94a3b8" font-size="10.5" text-anchor="middle">8×10GbE downlinks · 2×100G uplink</text>
+                        <text x="1000" y="134" fill="#ec4899" font-size="9.5" font-weight="700" text-anchor="middle" letter-spacing="1">2×100G vPC → NEXUS</text>
                     </g>
 
                     <!-- Cisco Nexus 3232T (core) -->
@@ -690,12 +717,138 @@
                         <text x="600" y="310" fill="#60a5fa" font-size="9.5" font-weight="700" text-anchor="middle" letter-spacing="1.5">32 × 100G · 6,4 Tbps · vPC PEER</text>
                     </g>
 
-                    <!-- Access bar -->
+                    <!-- ====== COMPUTE ZONE: Titán + 6 Sparks (3 dual-pairs) ====== -->
+                    <g class="svg-node" style="animation-delay: 0.25s;">
+                        <!-- TITÁN -->
+                        <rect x="825" y="225" width="55" height="100" rx="5" fill="#1e293b" stroke="#E57000" stroke-width="1.5"/>
+                        <rect x="825" y="225" width="55" height="5" fill="#E57000"/>
+                        <!-- 2 × 10G ethernet ports on top -->
+                        <rect x="838" y="228" width="8" height="4" rx="1" fill="#0f172a" stroke="#fdba74" stroke-width="0.6"/>
+                        <rect x="858" y="228" width="8" height="4" rx="1" fill="#0f172a" stroke="#fdba74" stroke-width="0.6"/>
+                        <!-- GPU stack (3 RTX 6000) -->
+                        <rect x="829" y="242" width="47" height="7" rx="1" fill="#0f172a"/>
+                        <rect x="829" y="252" width="47" height="7" rx="1" fill="#0f172a"/>
+                        <rect x="829" y="262" width="47" height="7" rx="1" fill="#0f172a"/>
+                        <circle cx="835" cy="245.5" r="0.9" fill="#76b900"/>
+                        <circle cx="835" cy="255.5" r="0.9" fill="#76b900"/>
+                        <circle cx="835" cy="265.5" r="0.9" fill="#76b900"/>
+                        <text x="852.5" y="286" fill="white" font-size="9" font-weight="800" text-anchor="middle" letter-spacing="0.5">TITÁN</text>
+                        <text x="852.5" y="300" fill="#E57000" font-size="7.5" font-weight="700" text-anchor="middle">2×10G</text>
+                        <text x="852.5" y="315" fill="#64748b" font-size="6.5" text-anchor="middle">3×RTX 6000</text>
+
+                        <!-- SPARK 1 (pair 1) -->
+                        <rect x="895" y="235" width="35" height="85" rx="4" fill="#1e293b" stroke="#76b900" stroke-width="1.2"/>
+                        <rect x="895" y="235" width="35" height="4" fill="#76b900"/>
+                        <rect x="908" y="237" width="8" height="4" rx="1" fill="#0f172a" stroke="#a3e635" stroke-width="0.5"/>
+                        <rect x="898" y="248" width="29" height="6" rx="1" fill="#0f172a"/>
+                        <rect x="898" y="257" width="29" height="6" rx="1" fill="#0f172a"/>
+                        <text x="912.5" y="282" fill="white" font-size="9" font-weight="800" text-anchor="middle">S1</text>
+                        <text x="912.5" y="296" fill="#76b900" font-size="6.5" font-weight="700" text-anchor="middle">10G</text>
+                        <text x="912.5" y="309" fill="#64748b" font-size="6" text-anchor="middle">Spark</text>
+
+                        <!-- SPARK 2 (pair 1) -->
+                        <rect x="932" y="235" width="35" height="85" rx="4" fill="#1e293b" stroke="#76b900" stroke-width="1.2"/>
+                        <rect x="932" y="235" width="35" height="4" fill="#76b900"/>
+                        <rect x="945" y="237" width="8" height="4" rx="1" fill="#0f172a" stroke="#a3e635" stroke-width="0.5"/>
+                        <rect x="935" y="248" width="29" height="6" rx="1" fill="#0f172a"/>
+                        <rect x="935" y="257" width="29" height="6" rx="1" fill="#0f172a"/>
+                        <text x="949.5" y="282" fill="white" font-size="9" font-weight="800" text-anchor="middle">S2</text>
+                        <text x="949.5" y="296" fill="#76b900" font-size="6.5" font-weight="700" text-anchor="middle">10G</text>
+                        <text x="949.5" y="309" fill="#64748b" font-size="6" text-anchor="middle">Spark</text>
+
+                        <!-- DUAL bracket 1 -->
+                        <path d="M 912.5 320 C 912.5 335, 949.5 335, 949.5 320" stroke="#22d3ee" stroke-width="1" fill="none" opacity="0.55"/>
+                        <text x="931" y="347" fill="#22d3ee" font-size="7" font-weight="700" text-anchor="middle" opacity="0.8" letter-spacing="1">DUAL</text>
+
+                        <!-- SPARK 3 (pair 2) -->
+                        <rect x="983" y="235" width="35" height="85" rx="4" fill="#1e293b" stroke="#76b900" stroke-width="1.2"/>
+                        <rect x="983" y="235" width="35" height="4" fill="#76b900"/>
+                        <rect x="996" y="237" width="8" height="4" rx="1" fill="#0f172a" stroke="#a3e635" stroke-width="0.5"/>
+                        <rect x="986" y="248" width="29" height="6" rx="1" fill="#0f172a"/>
+                        <rect x="986" y="257" width="29" height="6" rx="1" fill="#0f172a"/>
+                        <text x="1000.5" y="282" fill="white" font-size="9" font-weight="800" text-anchor="middle">S3</text>
+                        <text x="1000.5" y="296" fill="#76b900" font-size="6.5" font-weight="700" text-anchor="middle">10G</text>
+                        <text x="1000.5" y="309" fill="#64748b" font-size="6" text-anchor="middle">Spark</text>
+
+                        <!-- SPARK 4 (pair 2) -->
+                        <rect x="1020" y="235" width="35" height="85" rx="4" fill="#1e293b" stroke="#76b900" stroke-width="1.2"/>
+                        <rect x="1020" y="235" width="35" height="4" fill="#76b900"/>
+                        <rect x="1033" y="237" width="8" height="4" rx="1" fill="#0f172a" stroke="#a3e635" stroke-width="0.5"/>
+                        <rect x="1023" y="248" width="29" height="6" rx="1" fill="#0f172a"/>
+                        <rect x="1023" y="257" width="29" height="6" rx="1" fill="#0f172a"/>
+                        <text x="1037.5" y="282" fill="white" font-size="9" font-weight="800" text-anchor="middle">S4</text>
+                        <text x="1037.5" y="296" fill="#76b900" font-size="6.5" font-weight="700" text-anchor="middle">10G</text>
+                        <text x="1037.5" y="309" fill="#64748b" font-size="6" text-anchor="middle">Spark</text>
+
+                        <!-- DUAL bracket 2 -->
+                        <path d="M 1000.5 320 C 1000.5 335, 1037.5 335, 1037.5 320" stroke="#22d3ee" stroke-width="1" fill="none" opacity="0.55"/>
+                        <text x="1019" y="347" fill="#22d3ee" font-size="7" font-weight="700" text-anchor="middle" opacity="0.8" letter-spacing="1">DUAL</text>
+
+                        <!-- SPARK 5 (pair 3) -->
+                        <rect x="1071" y="235" width="35" height="85" rx="4" fill="#1e293b" stroke="#76b900" stroke-width="1.2"/>
+                        <rect x="1071" y="235" width="35" height="4" fill="#76b900"/>
+                        <rect x="1084" y="237" width="8" height="4" rx="1" fill="#0f172a" stroke="#a3e635" stroke-width="0.5"/>
+                        <rect x="1074" y="248" width="29" height="6" rx="1" fill="#0f172a"/>
+                        <rect x="1074" y="257" width="29" height="6" rx="1" fill="#0f172a"/>
+                        <text x="1088.5" y="282" fill="white" font-size="9" font-weight="800" text-anchor="middle">S5</text>
+                        <text x="1088.5" y="296" fill="#76b900" font-size="6.5" font-weight="700" text-anchor="middle">10G</text>
+                        <text x="1088.5" y="309" fill="#64748b" font-size="6" text-anchor="middle">Spark</text>
+
+                        <!-- SPARK 6 (pair 3) -->
+                        <rect x="1108" y="235" width="35" height="85" rx="4" fill="#1e293b" stroke="#76b900" stroke-width="1.2"/>
+                        <rect x="1108" y="235" width="35" height="4" fill="#76b900"/>
+                        <rect x="1121" y="237" width="8" height="4" rx="1" fill="#0f172a" stroke="#a3e635" stroke-width="0.5"/>
+                        <rect x="1111" y="248" width="29" height="6" rx="1" fill="#0f172a"/>
+                        <rect x="1111" y="257" width="29" height="6" rx="1" fill="#0f172a"/>
+                        <text x="1125.5" y="282" fill="white" font-size="9" font-weight="800" text-anchor="middle">S6</text>
+                        <text x="1125.5" y="296" fill="#76b900" font-size="6.5" font-weight="700" text-anchor="middle">10G</text>
+                        <text x="1125.5" y="309" fill="#64748b" font-size="6" text-anchor="middle">Spark</text>
+
+                        <!-- DUAL bracket 3 -->
+                        <path d="M 1088.5 320 C 1088.5 335, 1125.5 335, 1125.5 320" stroke="#22d3ee" stroke-width="1" fill="none" opacity="0.55"/>
+                        <text x="1107" y="347" fill="#22d3ee" font-size="7" font-weight="700" text-anchor="middle" opacity="0.8" letter-spacing="1">DUAL</text>
+                    </g>
+
+                    <!-- ====== 10GbE UPLINKS from compute devices to AI Aggregator ====== -->
                     <g class="svg-node" style="animation-delay: 0.3s;">
-                        <rect x="60" y="460" width="1080" height="125" rx="14" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
-                        <rect x="60" y="460" width="1080" height="4" fill="#f59e0b"/>
+                        <!-- Titán p1 → agg port 1 -->
+                        <path d="M 842 228 C 842 180, 920 180, 920 150" stroke="#76b900" stroke-width="1.3" fill="none" opacity="0.75" stroke-linecap="round"/>
+                        <path d="M 842 228 C 842 180, 920 180, 920 150" stroke="#ecfccb" stroke-width="1" fill="none" stroke-linecap="round" class="link-10g" opacity="0.6"/>
+                        <!-- Titán p2 → agg port 2 -->
+                        <path d="M 862 228 C 862 180, 945 180, 945 150" stroke="#76b900" stroke-width="1.3" fill="none" opacity="0.75" stroke-linecap="round"/>
+                        <path d="M 862 228 C 862 180, 945 180, 945 150" stroke="#ecfccb" stroke-width="1" fill="none" stroke-linecap="round" class="link-10g" opacity="0.6"/>
+                        <!-- S1 → port 3 -->
+                        <path d="M 912.5 237 C 912.5 190, 970 190, 970 150" stroke="#76b900" stroke-width="1.3" fill="none" opacity="0.75" stroke-linecap="round"/>
+                        <path d="M 912.5 237 C 912.5 190, 970 190, 970 150" stroke="#ecfccb" stroke-width="1" fill="none" stroke-linecap="round" class="link-10g" opacity="0.6"/>
+                        <!-- S2 → port 4 -->
+                        <path d="M 949.5 237 C 949.5 190, 995 190, 995 150" stroke="#76b900" stroke-width="1.3" fill="none" opacity="0.75" stroke-linecap="round"/>
+                        <path d="M 949.5 237 C 949.5 190, 995 190, 995 150" stroke="#ecfccb" stroke-width="1" fill="none" stroke-linecap="round" class="link-10g" opacity="0.6"/>
+                        <!-- S3 → port 5 -->
+                        <path d="M 1000.5 237 C 1000.5 190, 1020 190, 1020 150" stroke="#76b900" stroke-width="1.3" fill="none" opacity="0.75" stroke-linecap="round"/>
+                        <path d="M 1000.5 237 C 1000.5 190, 1020 190, 1020 150" stroke="#ecfccb" stroke-width="1" fill="none" stroke-linecap="round" class="link-10g" opacity="0.6"/>
+                        <!-- S4 → port 6 -->
+                        <path d="M 1037.5 237 C 1037.5 190, 1045 190, 1045 150" stroke="#76b900" stroke-width="1.3" fill="none" opacity="0.75" stroke-linecap="round"/>
+                        <path d="M 1037.5 237 C 1037.5 190, 1045 190, 1045 150" stroke="#ecfccb" stroke-width="1" fill="none" stroke-linecap="round" class="link-10g" opacity="0.6"/>
+                        <!-- S5 → port 7 -->
+                        <path d="M 1088.5 237 C 1088.5 190, 1070 190, 1070 150" stroke="#76b900" stroke-width="1.3" fill="none" opacity="0.75" stroke-linecap="round"/>
+                        <path d="M 1088.5 237 C 1088.5 190, 1070 190, 1070 150" stroke="#ecfccb" stroke-width="1" fill="none" stroke-linecap="round" class="link-10g" opacity="0.6"/>
+                        <!-- S6 → port 8 -->
+                        <path d="M 1125.5 237 C 1125.5 190, 1095 190, 1095 150" stroke="#76b900" stroke-width="1.3" fill="none" opacity="0.75" stroke-linecap="round"/>
+                        <path d="M 1125.5 237 C 1125.5 190, 1095 190, 1095 150" stroke="#ecfccb" stroke-width="1" fill="none" stroke-linecap="round" class="link-10g" opacity="0.6"/>
+
+                        <!-- 8×10GbE badge -->
+                        <g transform="translate(1000, 190)">
+                            <rect x="-36" y="-10" width="72" height="20" rx="10" fill="#4d7500"/>
+                            <text x="0" y="4" fill="white" font-size="9.5" font-weight="800" text-anchor="middle" letter-spacing="0.5">8 × 10GbE</text>
+                        </g>
+                    </g>
+
+                    <!-- Access bar (shifted down) -->
+                    <g class="svg-node" style="animation-delay: 0.35s;">
+                        <rect x="60" y="560" width="1080" height="125" rx="14" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+                        <rect x="60" y="560" width="1080" height="4" fill="#f59e0b"/>
                         <g id="rack-strip"></g>
-                        <text x="600" y="572" fill="#f59e0b" font-size="10" font-weight="700" text-anchor="middle" letter-spacing="1.5">22 × CRS354 · 1 056 PUERTOS DE ACCESO (48×1G CADA UNO)</text>
+                        <text x="600" y="672" fill="#f59e0b" font-size="10" font-weight="700" text-anchor="middle" letter-spacing="1.5">22 × CRS354 · 1 056 PUERTOS DE ACCESO (48×1G CADA UNO)</text>
                     </g>
 
                     <!-- Link: Gateway → Nexus (200G vPC/LACP) -->
@@ -711,14 +864,14 @@
                         </g>
                     </g>
 
-                    <!-- Link: AI → Nexus (200G vPC/LACP) -->
+                    <!-- Link: AI Aggregator → Nexus (200G vPC/LACP, exits from LEFT edge to avoid compute fan) -->
                     <g class="svg-node" style="animation-delay: 0.45s;">
-                        <path d="M 1000 150 C 1000 200, 760 190, 700 230"
+                        <path d="M 890 150 C 880 200, 760 200, 700 230"
                               stroke="url(#grad-ai)" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
-                        <path d="M 1000 150 C 1000 200, 760 190, 700 230"
+                        <path d="M 890 150 C 880 200, 760 200, 700 230"
                               stroke="#ffffff" stroke-width="1.4" fill="none" stroke-linecap="round"
                               class="link-ai" opacity="0.7"/>
-                        <g transform="translate(870, 172)">
+                        <g transform="translate(790, 195)">
                             <rect x="-62" y="-13" width="124" height="26" rx="13" fill="#be185d"/>
                             <text x="0" y="4" fill="white" font-size="11" font-weight="800" text-anchor="middle" letter-spacing="1">200G vPC / LACP</text>
                         </g>
@@ -726,10 +879,10 @@
 
                     <!-- Link: Nexus → Access (22 × 40G) -->
                     <g class="svg-node" style="animation-delay: 0.5s;">
-                        <line x1="600" y1="330" x2="600" y2="460" stroke="#f59e0b" stroke-width="2.5" opacity="0.85" stroke-linecap="round"/>
-                        <line x1="600" y1="330" x2="600" y2="460" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round"
+                        <line x1="600" y1="330" x2="600" y2="560" stroke="#f59e0b" stroke-width="2.5" opacity="0.85" stroke-linecap="round"/>
+                        <line x1="600" y1="330" x2="600" y2="560" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round"
                               class="link-40g" opacity="0.7"/>
-                        <g transform="translate(600, 395)">
+                        <g transform="translate(600, 445)">
                             <rect x="-72" y="-13" width="144" height="26" rx="13" fill="#b45309"/>
                             <text x="0" y="4" fill="white" font-size="11" font-weight="800" text-anchor="middle" letter-spacing="1">22 × 40G QSFP+</text>
                         </g>
@@ -769,9 +922,26 @@
                     <p>El <strong>Cisco Nexus 3232T</strong> opera como fabric <em>non-blocking</em> de <strong>32 × 100 GbE</strong> (6,4 Tbps, latencia sub-microsegundo), conmutando en línea cualquier flujo entre perímetro, nodo de IA y capa de acceso.</p>
                     <ul>
                         <li><strong>2×100G vPC/LACP al gateway</strong> — autopista de 200 Gbps activa-activa hacia la MikroTik CCR2216.</li>
-                        <li><strong>2×100G vPC/LACP al nodo IA</strong> — otros 200 Gbps dedicados al Spark/Titán.</li>
+                        <li><strong>2×100G vPC/LACP al agregador IA</strong> — otros 200 Gbps dedicados al cluster de cómputo.</li>
                         <li><strong>22×40G QSFP+ SR4</strong> — uplinks hacia los racks de acceso.</li>
                         <li><strong>NX-OS + VXLAN/EVPN</strong> — plano de control moderno, <em>MLAG</em> vía vPC sin loops STP.</li>
+                    </ul>
+                </div>
+
+                <div class="layer-card" style="--layer-color: var(--c-1g);">
+                    <div class="layer-head">
+                        <div class="layer-icon"><i data-lucide="cpu" style="width:24px; height:24px;"></i></div>
+                        <div>
+                            <div class="layer-tag">Cómputo</div>
+                            <h3>Cluster IA · 1 Titán + 6 Spark</h3>
+                        </div>
+                    </div>
+                    <p>El <strong>switch agregador IA</strong> conmuta el tráfico interno del cluster y lo entrega al Nexus por una autopista de 200 Gbps. Downlinks individuales a cada máquina mediante 10 GbE.</p>
+                    <ul>
+                        <li><strong>Nodo Titán</strong> — 2 × 10 GbE (agregación/redundancia).</li>
+                        <li><strong>3 × Dual-Spark</strong> — 6 DGX Spark en 3 parejas, 1 × 10 GbE por máquina.</li>
+                        <li><strong>Total: 8 × 10 GbE downlinks</strong> desde el agregador al cómputo.</li>
+                        <li><strong>Uplink 2×100 G</strong> vPC/LACP agregado al Nexus central.</li>
                     </ul>
                 </div>
 
@@ -898,8 +1068,8 @@
                         <div class="hw-end hw-ai">
                             <i data-lucide="brain-circuit" style="width:18px; height:18px;"></i>
                             <div>
-                                <strong>Nodo IA</strong>
-                                <span>Spark / Titán + NVMe</span>
+                                <strong>Agregador IA</strong>
+                                <span>Titán + 3×Dual-Spark</span>
                             </div>
                         </div>
                     </div>
@@ -938,8 +1108,8 @@
                     <div class="metric-label">Fabric Nexus</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-value" data-count="22" data-suffix=" × 40G">0</div>
-                    <div class="metric-label">Uplinks de rack</div>
+                    <div class="metric-value" data-count="8" data-suffix=" × 10G">0</div>
+                    <div class="metric-label">Downlinks IA</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-value" data-count="1056" data-suffix="">0</div>
@@ -983,6 +1153,31 @@
                                 <td>Fabric non-blocking 6,4 Tbps · vPC/LACP peer</td>
                             </tr>
                             <tr>
+                                <td><span class="dev-badge" style="--dev-color: var(--c-ai);">Switch Agregador IA</span></td>
+                                <td>
+                                    <span class="port-chip p-10">8×10G</span>
+                                    <span class="port-chip p-100">2×100G</span>
+                                </td>
+                                <td>Cómputo</td>
+                                <td>Agregador de cluster IA · uplink vPC al Nexus</td>
+                            </tr>
+                            <tr>
+                                <td><span class="dev-badge" style="--dev-color: #E57000;">Nodo Titán</span></td>
+                                <td>
+                                    <span class="port-chip p-10">2×10G</span>
+                                </td>
+                                <td>Cómputo</td>
+                                <td>Entrenamiento · 3×RTX 6000 · Threadripper Pro</td>
+                            </tr>
+                            <tr>
+                                <td><span class="dev-badge" style="--dev-color: var(--c-1g);">DGX Spark (×6)</span></td>
+                                <td>
+                                    <span class="port-chip p-10">1×10G</span>
+                                </td>
+                                <td>Cómputo</td>
+                                <td>Inferencia · 3 parejas en modo dual (ConnectX-7)</td>
+                            </tr>
+                            <tr>
                                 <td><span class="dev-badge" style="--dev-color: var(--c-40g);">MikroTik CRS354 (×22)</span></td>
                                 <td>
                                     <span class="port-chip p-1">48×1G</span>
@@ -990,14 +1185,6 @@
                                 </td>
                                 <td>Acceso</td>
                                 <td>Acceso de usuarios · Uplink a núcleo</td>
-                            </tr>
-                            <tr>
-                                <td><span class="dev-badge" style="--dev-color: var(--c-ai);">Nodo IA (Spark/Titán)</span></td>
-                                <td>
-                                    <span class="port-chip p-100">2×100G</span>
-                                </td>
-                                <td>Cómputo</td>
-                                <td>Enlace directo al núcleo · Almacenamiento NVMe</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1023,7 +1210,7 @@
 
     <script src="script.js"></script>
 
-    <!-- ================= RACK STRIP (22 celdas minimalistas) ================= -->
+    <!-- ================= RACK STRIP (22 celdas con detalle 1U) ================= -->
     <script>
         (function () {
             const strip = document.getElementById('rack-strip');
@@ -1035,7 +1222,7 @@
             const GAP = 5;
             const total = COUNT * CELL_W + (COUNT - 1) * GAP;
             const startX = (1200 - total) / 2;
-            const y = 474;
+            const y = 574;
             const h = 70;
 
             function el(tag, attrs) {
@@ -1044,52 +1231,41 @@
                 return e;
             }
 
-            // LED palette (static, no animation — 2 colors per slot row alternating)
             const LED_LEFT  = ['#22d3ee', '#76b900', '#22d3ee', '#76b900'];
             const LED_RIGHT = ['#f59e0b', '#ec4899', '#f59e0b', '#ec4899'];
 
             for (let i = 0; i < COUNT; i++) {
                 const x = startX + i * (CELL_W + GAP);
 
-                // Cabinet body
                 strip.appendChild(el('rect', {
                     x: x, y: y, width: CELL_W, height: h, rx: 3,
                     fill: '#0f172a', stroke: '#475569', 'stroke-width': 1
                 }));
-
-                // Top cap (orange ears — identifies rack-top / uplink zone)
                 strip.appendChild(el('rect', {
                     x: x, y: y, width: CELL_W, height: 7, rx: 3,
                     fill: '#b45309'
                 }));
-
-                // Uplink port on the cap (40G QSFP+)
                 strip.appendChild(el('rect', {
                     x: x + CELL_W / 2 - 5, y: y + 2, width: 10, height: 3, rx: 1,
                     fill: '#1e293b', stroke: '#fbbf24', 'stroke-width': 0.5
                 }));
 
-                // 4 horizontal 1U slots with LEDs
                 for (let s = 0; s < 4; s++) {
                     const slotY = y + 13 + s * 10;
-                    // Slot body
                     strip.appendChild(el('rect', {
                         x: x + 3, y: slotY, width: CELL_W - 6, height: 7, rx: 1,
                         fill: '#1e293b', stroke: '#334155', 'stroke-width': 0.4
                     }));
-                    // Left LED
                     strip.appendChild(el('circle', {
                         cx: x + 7, cy: slotY + 3.5, r: 1.1,
                         fill: LED_LEFT[s]
                     }));
-                    // Right LED
                     strip.appendChild(el('circle', {
                         cx: x + CELL_W - 7, cy: slotY + 3.5, r: 1.1,
                         fill: LED_RIGHT[s]
                     }));
                 }
 
-                // Rack number label (below slots, inside cabinet)
                 const lbl = el('text', {
                     x: x + CELL_W / 2, y: y + h - 5,
                     fill: '#94a3b8', 'font-size': 8, 'font-weight': 700,
