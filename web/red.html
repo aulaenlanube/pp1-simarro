@@ -692,10 +692,10 @@
 
                     <!-- Access bar -->
                     <g class="svg-node" style="animation-delay: 0.3s;">
-                        <rect x="60" y="460" width="1080" height="110" rx="14" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+                        <rect x="60" y="460" width="1080" height="125" rx="14" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
                         <rect x="60" y="460" width="1080" height="4" fill="#f59e0b"/>
                         <g id="rack-strip"></g>
-                        <text x="600" y="555" fill="#f59e0b" font-size="10" font-weight="700" text-anchor="middle" letter-spacing="1.5">22 × CRS354 · 1 056 PUERTOS DE ACCESO (48×1G CADA UNO)</text>
+                        <text x="600" y="572" fill="#f59e0b" font-size="10" font-weight="700" text-anchor="middle" letter-spacing="1.5">22 × CRS354 · 1 056 PUERTOS DE ACCESO (48×1G CADA UNO)</text>
                     </g>
 
                     <!-- Link: Gateway → Nexus (200G vPC/LACP) -->
@@ -1029,37 +1029,74 @@
             const strip = document.getElementById('rack-strip');
             if (!strip) return;
             const NS = 'http://www.w3.org/2000/svg';
+
             const COUNT = 22;
-            const CELL_W = 38;
-            const GAP = 7;
+            const CELL_W = 42;
+            const GAP = 5;
             const total = COUNT * CELL_W + (COUNT - 1) * GAP;
             const startX = (1200 - total) / 2;
-            const y = 478;
-            const h = 58;
+            const y = 474;
+            const h = 70;
+
+            function el(tag, attrs) {
+                const e = document.createElementNS(NS, tag);
+                for (const k in attrs) e.setAttribute(k, attrs[k]);
+                return e;
+            }
+
+            // LED palette (static, no animation — 2 colors per slot row alternating)
+            const LED_LEFT  = ['#22d3ee', '#76b900', '#22d3ee', '#76b900'];
+            const LED_RIGHT = ['#f59e0b', '#ec4899', '#f59e0b', '#ec4899'];
 
             for (let i = 0; i < COUNT; i++) {
                 const x = startX + i * (CELL_W + GAP);
 
-                const rect = document.createElementNS(NS, 'rect');
-                rect.setAttribute('x', x);
-                rect.setAttribute('y', y);
-                rect.setAttribute('width', CELL_W);
-                rect.setAttribute('height', h);
-                rect.setAttribute('rx', 4);
-                rect.setAttribute('fill', '#0f172a');
-                rect.setAttribute('stroke', '#334155');
-                rect.setAttribute('stroke-width', '1');
-                strip.appendChild(rect);
+                // Cabinet body
+                strip.appendChild(el('rect', {
+                    x: x, y: y, width: CELL_W, height: h, rx: 3,
+                    fill: '#0f172a', stroke: '#475569', 'stroke-width': 1
+                }));
 
-                const label = document.createElementNS(NS, 'text');
-                label.setAttribute('x', x + CELL_W / 2);
-                label.setAttribute('y', y + h / 2 + 4);
-                label.setAttribute('fill', '#cbd5e1');
-                label.setAttribute('font-size', '10');
-                label.setAttribute('font-weight', '700');
-                label.setAttribute('text-anchor', 'middle');
-                label.textContent = String(i + 1).padStart(2, '0');
-                strip.appendChild(label);
+                // Top cap (orange ears — identifies rack-top / uplink zone)
+                strip.appendChild(el('rect', {
+                    x: x, y: y, width: CELL_W, height: 7, rx: 3,
+                    fill: '#b45309'
+                }));
+
+                // Uplink port on the cap (40G QSFP+)
+                strip.appendChild(el('rect', {
+                    x: x + CELL_W / 2 - 5, y: y + 2, width: 10, height: 3, rx: 1,
+                    fill: '#1e293b', stroke: '#fbbf24', 'stroke-width': 0.5
+                }));
+
+                // 4 horizontal 1U slots with LEDs
+                for (let s = 0; s < 4; s++) {
+                    const slotY = y + 13 + s * 10;
+                    // Slot body
+                    strip.appendChild(el('rect', {
+                        x: x + 3, y: slotY, width: CELL_W - 6, height: 7, rx: 1,
+                        fill: '#1e293b', stroke: '#334155', 'stroke-width': 0.4
+                    }));
+                    // Left LED
+                    strip.appendChild(el('circle', {
+                        cx: x + 7, cy: slotY + 3.5, r: 1.1,
+                        fill: LED_LEFT[s]
+                    }));
+                    // Right LED
+                    strip.appendChild(el('circle', {
+                        cx: x + CELL_W - 7, cy: slotY + 3.5, r: 1.1,
+                        fill: LED_RIGHT[s]
+                    }));
+                }
+
+                // Rack number label (below slots, inside cabinet)
+                const lbl = el('text', {
+                    x: x + CELL_W / 2, y: y + h - 5,
+                    fill: '#94a3b8', 'font-size': 8, 'font-weight': 700,
+                    'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace'
+                });
+                lbl.textContent = String(i + 1).padStart(2, '0');
+                strip.appendChild(lbl);
             }
         })();
 
