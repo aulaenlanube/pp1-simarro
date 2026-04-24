@@ -16,6 +16,14 @@
     <!-- Custom Style -->
     <link rel="stylesheet" href="style.css?v=1.1">
     <style>
+        :root {
+            --c-100g: #22d3ee;
+            --c-40g: #f59e0b;
+            --c-1g: #76b900;
+            --c-ai: #ec4899;
+            --c-deep: #0f172a;
+        }
+
         .hero-mini {
             padding: 60px 5% 10px;
             text-align: center;
@@ -36,30 +44,14 @@
         .hero-lead {
             font-size: 1.1rem;
             color: var(--text-secondary);
-            max-width: 700px;
+            max-width: 760px;
             margin: 0 auto 2rem;
         }
 
-        .manual-container {
-            max-width: 1000px;
+        .wide-container {
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 2rem 5% 5rem;
-        }
-
-        .construction-box {
-            text-align: center;
-            padding: 4rem 2rem;
-            border-radius: 20px;
-            background: rgba(255, 107, 0, 0.05);
-            border: 2px dashed var(--accent-orange);
-            margin-top: 3rem;
-        }
-
-        .construction-icon {
-            width: 64px;
-            height: 64px;
-            color: var(--accent-orange);
-            margin-bottom: 1.5rem;
+            padding: 2rem 3% 5rem;
         }
 
         body {
@@ -77,6 +69,552 @@
 
         main {
             flex: 1;
+        }
+
+        /* ============= TOPOLOGY CANVAS ============= */
+        .topology-wrap {
+            background: linear-gradient(180deg, #0b1120 0%, #0f172a 100%);
+            border-radius: 28px;
+            padding: 2rem;
+            box-shadow: 0 30px 80px -20px rgba(15, 23, 42, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .topology-wrap::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        .topo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .topo-header h2 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .topo-header h2 span {
+            color: var(--c-100g);
+        }
+
+        .topo-legend {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .topo-legend .lg-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.75);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .lg-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        #topo-svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            position: relative;
+            z-index: 1;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* ============= SVG Animations ============= */
+        @keyframes pulseLed {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.45; transform: scale(0.85); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.35; }
+        }
+        @keyframes flow100g {
+            to { stroke-dashoffset: -36; }
+        }
+        @keyframes flow40g {
+            to { stroke-dashoffset: -28; }
+        }
+        @keyframes flowAi {
+            to { stroke-dashoffset: -32; }
+        }
+        @keyframes fadeInTopo {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .svg-node {
+            animation: fadeInTopo 0.8s ease-out both;
+        }
+        .led { animation: pulseLed 1.6s ease-in-out infinite; }
+        .led.d2 { animation-delay: 0.2s; }
+        .led.d3 { animation-delay: 0.4s; }
+        .led.d4 { animation-delay: 0.6s; }
+        .led.d5 { animation-delay: 0.8s; }
+        .node-glow { animation: pulseGlow 3s ease-in-out infinite; }
+        .link-100g {
+            stroke-dasharray: 8 8;
+            animation: flow100g 1.1s linear infinite;
+        }
+        .link-40g {
+            stroke-dasharray: 4 8;
+            animation: flow40g 1.4s linear infinite;
+        }
+        .link-ai {
+            stroke-dasharray: 6 6;
+            animation: flowAi 1s linear infinite;
+        }
+
+        /* ============= LAYER CARDS ============= */
+        .layer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .layer-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .layer-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: var(--layer-color, var(--c-100g));
+        }
+
+        .layer-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .layer-card .layer-head {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .layer-card .layer-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--layer-color, var(--c-100g)) 12%, transparent);
+            color: var(--layer-color, var(--c-100g));
+            flex-shrink: 0;
+        }
+
+        .layer-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .layer-card .layer-tag {
+            font-size: 0.72rem;
+            color: var(--layer-color, var(--c-100g));
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .layer-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .layer-card ul {
+            margin: 0;
+            padding-left: 1.2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .layer-card ul li strong {
+            color: var(--text-primary);
+        }
+
+        /* ============= METRICS ============= */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.025);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        /* ============= CAPACITY TABLE ============= */
+        .capacity-section {
+            margin-top: 4rem;
+        }
+
+        .capacity-section h2 {
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .capacity-section .sub {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .cap-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        }
+
+        .cap-table thead {
+            background: var(--c-deep);
+            color: white;
+        }
+
+        .cap-table th {
+            text-align: left;
+            padding: 1rem 1.5rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cap-table td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.95rem;
+        }
+
+        .cap-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .cap-table tr:hover {
+            background: rgba(0, 115, 207, 0.025);
+        }
+
+        .cap-table .dev-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .cap-table .dev-badge::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--dev-color, var(--c-100g));
+            box-shadow: 0 0 8px var(--dev-color, var(--c-100g));
+        }
+
+        .port-chip {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-right: 6px;
+            background: #f1f5f9;
+            color: var(--text-primary);
+        }
+
+        .port-chip.p-100 { background: rgba(34, 211, 238, 0.12); color: #0891b2; }
+        .port-chip.p-40 { background: rgba(245, 158, 11, 0.12); color: #b45309; }
+        .port-chip.p-25 { background: rgba(139, 92, 246, 0.12); color: #6d28d9; }
+        .port-chip.p-1 { background: rgba(118, 185, 0, 0.12); color: #4d7500; }
+
+        /* ============= NEXUS DEEP-DIVE ============= */
+        .nexus-deepdive {
+            margin-top: 3rem;
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 2rem;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 28px;
+            padding: 3rem;
+            color: white;
+            box-shadow: 0 30px 80px -20px rgba(15, 23, 42, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nexus-deepdive::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 20% 10%, rgba(59,130,246,0.15) 0px, transparent 40%),
+                radial-gradient(circle at 80% 100%, rgba(236,72,153,0.1) 0px, transparent 40%);
+            pointer-events: none;
+        }
+
+        .nd-left, .nd-right { position: relative; z-index: 1; }
+
+        .nd-eyebrow {
+            color: #60a5fa;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            margin-bottom: 0.8rem;
+        }
+
+        .nd-left h2 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin: 0 0 1rem 0;
+            color: white;
+        }
+        .nd-left h2 span {
+            background: linear-gradient(135deg, #60a5fa 0%, #22d3ee 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nd-lead {
+            color: rgba(255,255,255,0.72);
+            font-size: 1rem;
+            line-height: 1.65;
+            margin-bottom: 2rem;
+        }
+
+        .nd-specs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .nd-spec {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            padding: 0.9rem 1rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+        }
+
+        .nd-spec i {
+            width: 22px;
+            height: 22px;
+            color: #60a5fa;
+            flex-shrink: 0;
+        }
+
+        .nd-spec div { display: flex; flex-direction: column; line-height: 1.25; }
+        .nd-spec strong { font-size: 1.05rem; font-weight: 700; color: white; }
+        .nd-spec span { font-size: 0.78rem; color: rgba(255,255,255,0.55); }
+
+        .nd-highway-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+        }
+        .nd-highway-title strong {
+            background: linear-gradient(135deg, #22d3ee 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .nd-highway-sub {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+            margin: 0 0 1.5rem 0;
+            line-height: 1.5;
+        }
+
+        .highway {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+        }
+
+        .hw-end {
+            display: flex;
+            gap: 0.7rem;
+            align-items: center;
+            padding: 0.7rem 0.9rem;
+            border-radius: 10px;
+            min-width: 150px;
+        }
+        .hw-end i { flex-shrink: 0; }
+        .hw-end div { display: flex; flex-direction: column; line-height: 1.25; }
+        .hw-end strong { font-size: 0.88rem; font-weight: 700; color: white; }
+        .hw-end span { font-size: 0.72rem; color: rgba(255,255,255,0.55); }
+
+        .hw-mikrotik { background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.3); }
+        .hw-mikrotik i { color: #22d3ee; }
+        .hw-nexus { background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.3); }
+        .hw-nexus i { color: #60a5fa; }
+        .hw-ai { background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.3); }
+        .hw-ai i { color: #ec4899; }
+
+        .hw-pipe {
+            position: relative;
+            padding: 0 0.5rem;
+        }
+
+        .hw-pipe-label {
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hw-pipe-track {
+            position: relative;
+            height: 14px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 7px;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+        }
+
+        .hw-pipe-flow {
+            position: absolute;
+            top: 3px;
+            height: 8px;
+            width: 40px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, transparent, var(--flow-color, #22d3ee), transparent);
+            box-shadow: 0 0 14px var(--flow-color, #22d3ee);
+            animation: hwFlow 2s linear infinite;
+            animation-delay: var(--delay, 0s);
+        }
+
+        @keyframes hwFlow {
+            0%   { left: -40px; opacity: 0.2; }
+            10%  { opacity: 1; }
+            90%  { opacity: 1; }
+            100% { left: 100%; opacity: 0.2; }
+        }
+
+        .nd-vpc-notes {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .nd-vpc-item {
+            display: flex;
+            gap: 0.7rem;
+            align-items: flex-start;
+            font-size: 0.88rem;
+            line-height: 1.55;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .nd-vpc-item i { flex-shrink: 0; margin-top: 2px; }
+        .nd-vpc-item strong { color: white; }
+
+        @media (max-width: 960px) {
+            .nexus-deepdive { grid-template-columns: 1fr; padding: 2rem; }
+            .nd-specs { grid-template-columns: 1fr; }
+            .highway { grid-template-columns: 1fr; }
+            .hw-pipe { padding: 0.5rem 0; }
+            .hw-pipe-track { height: 10px; }
+        }
+
+        /* ============= RESPONSIVE ============= */
+        @media (max-width: 720px) {
+            .topology-wrap { padding: 1rem; border-radius: 18px; }
+            .hero-mini h1 { font-size: 2.2rem; }
+            .cap-table { font-size: 0.85rem; }
+            .cap-table th, .cap-table td { padding: 0.8rem; }
         }
     </style>
 </head>
@@ -110,24 +648,627 @@
 
     <main>
         <section class="hero-mini">
-            <h1>Infraestructura <span>de Red</span></h1>
-            <p class="hero-lead">Topología de interconexión de alta velocidad y orquestación de red del CPD.</p>
+            <h1>Arquitectura <span>de Red</span></h1>
+            <p class="hero-lead">Del perímetro al acceso — topología jerárquica con troncal 100 G LACP,
+                uplinks 40 G QSFP+ y densidad de 1 056 puertos de acceso.</p>
         </section>
 
-        <article class="manual-container">
-            <div class="construction-box">
-                <i data-lucide="hard-hat" class="construction-icon"></i>
-                <h2 style="color: var(--text-primary); margin-bottom: 1rem;">Sección en Construcción</h2>
-                <p style="color: var(--text-secondary); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
-                    Estamos detallando la arquitectura de red ConnectX-7, el switching y la segmentación de tráfico del
-                    centro. Toda la información técnica estará disponible aquí próximamente.
-                </p>
-                <div style="margin-top: 2.5rem;">
-                    <a href="index.html" class="cta-button" style="background: var(--text-primary);">
-                        <i data-lucide="arrow-left"></i> Volver al Inicio
-                    </a>
+        <article class="wide-container">
+
+            <!-- ============================= -->
+            <!-- TOPOLOGY SVG                  -->
+            <!-- ============================= -->
+            <div class="topology-wrap">
+                <div class="topo-header">
+                    <h2><i data-lucide="network" style="width:20px; height:20px; vertical-align:middle; color: var(--c-100g);"></i> Topología <span>interactiva</span></h2>
+                    <div class="topo-legend">
+                        <div class="lg-item"><span class="lg-dot" style="background: var(--c-100g); color: var(--c-100g);"></span>100 G LACP</div>
+                        <div class="lg-item"><span class="lg-dot" style="background: var(--c-ai); color: var(--c-ai);"></span>2×100 G IA</div>
+                        <div class="lg-item"><span class="lg-dot" style="background: var(--c-40g); color: var(--c-40g);"></span>40 G Uplink</div>
+                        <div class="lg-item"><span class="lg-dot" style="background: var(--c-1g); color: var(--c-1g);"></span>48×1 G Acceso</div>
+                    </div>
+                </div>
+
+                <svg id="topo-svg" viewBox="0 0 1400 960" preserveAspectRatio="xMidYMid meet" aria-label="Diagrama de topología de red">
+                    <defs>
+                        <!-- Gradient for 100G trunk -->
+                        <linearGradient id="grad-100g" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#22d3ee"/>
+                            <stop offset="100%" stop-color="#0ea5e9"/>
+                        </linearGradient>
+                        <linearGradient id="grad-ai" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#ec4899"/>
+                            <stop offset="100%" stop-color="#a855f7"/>
+                        </linearGradient>
+                        <linearGradient id="grad-40g" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#fbbf24"/>
+                            <stop offset="100%" stop-color="#f97316"/>
+                        </linearGradient>
+                        <linearGradient id="grad-device" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#1e293b"/>
+                            <stop offset="100%" stop-color="#0f172a"/>
+                        </linearGradient>
+                        <linearGradient id="grad-device-core" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#1e40af"/>
+                            <stop offset="100%" stop-color="#0c1e4a"/>
+                        </linearGradient>
+                        <linearGradient id="grad-device-ai" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#831843"/>
+                            <stop offset="100%" stop-color="#3b0764"/>
+                        </linearGradient>
+                        <linearGradient id="grad-rack" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#334155"/>
+                            <stop offset="100%" stop-color="#0f172a"/>
+                        </linearGradient>
+
+                        <!-- Soft glow filter -->
+                        <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="4" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+
+                        <!-- Packet symbol -->
+                        <radialGradient id="packet-cyan">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+                            <stop offset="50%" stop-color="#22d3ee" stop-opacity="1"/>
+                            <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+                        </radialGradient>
+                        <radialGradient id="packet-orange">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+                            <stop offset="50%" stop-color="#fbbf24" stop-opacity="1"/>
+                            <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+                        </radialGradient>
+                        <radialGradient id="packet-pink">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+                            <stop offset="50%" stop-color="#ec4899" stop-opacity="1"/>
+                            <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+                        </radialGradient>
+
+                        <!-- Paths for packet motion -->
+                        <!-- Gateway (250,180) -> Nexus (700,370) — dos líneas paralelas = 2×100G LACP -->
+                        <path id="path-gw-nexus" d="M 330 185 C 500 185, 550 295, 680 345" fill="none"/>
+                        <path id="path-gw-nexus-2" d="M 330 200 C 500 200, 550 315, 680 365" fill="none"/>
+                        <!-- Nexus -> AI node -->
+                        <path id="path-nexus-ai" d="M 740 350 C 900 260, 1000 220, 1120 195" fill="none"/>
+                        <path id="path-nexus-ai-2" d="M 740 365 C 900 290, 1000 240, 1120 210" fill="none"/>
+                    </defs>
+
+                    <!-- ======== BACKGROUND GRID ======== -->
+                    <g opacity="0.08">
+                        <line x1="0" y1="500" x2="1400" y2="500" stroke="white" stroke-width="1" stroke-dasharray="2 8"/>
+                    </g>
+
+                    <!-- ======== SECTION LABELS ======== -->
+                    <g class="svg-node" style="animation-delay: 0.05s;">
+                        <text x="50" y="55" fill="#22d3ee" font-size="11" font-weight="700" letter-spacing="2" opacity="0.85">NÚCLEO Y GESTIÓN PERIMETRAL</text>
+                        <line x1="50" y1="62" x2="420" y2="62" stroke="#22d3ee" stroke-width="1" opacity="0.3"/>
+                    </g>
+                    <g class="svg-node" style="animation-delay: 0.05s;">
+                        <text x="1350" y="55" fill="#ec4899" font-size="11" font-weight="700" letter-spacing="2" opacity="0.85" text-anchor="end">NODO DE IA</text>
+                        <line x1="1160" y1="62" x2="1350" y2="62" stroke="#ec4899" stroke-width="1" opacity="0.3"/>
+                    </g>
+                    <g class="svg-node" style="animation-delay: 0.1s;">
+                        <text x="50" y="510" fill="#f59e0b" font-size="11" font-weight="700" letter-spacing="2" opacity="0.85">CAPA DE ACCESO Y DISTRIBUCIÓN</text>
+                        <line x1="50" y1="517" x2="420" y2="517" stroke="#f59e0b" stroke-width="1" opacity="0.3"/>
+                    </g>
+
+                    <!-- ======== GATEWAY MIKROTIK ======== -->
+                    <g class="svg-node" style="animation-delay: 0.2s;">
+                        <!-- Ambient glow -->
+                        <ellipse cx="200" cy="195" rx="160" ry="50" fill="#22d3ee" opacity="0.08" filter="url(#soft-glow)" class="node-glow"/>
+                        <!-- Device body -->
+                        <rect x="80" y="150" width="240" height="80" rx="10" fill="url(#grad-device)" stroke="#22d3ee" stroke-width="1.5"/>
+                        <!-- Top rack ears -->
+                        <rect x="80" y="150" width="240" height="8" fill="#0f172a"/>
+                        <rect x="80" y="222" width="240" height="8" fill="#0f172a"/>
+                        <!-- LEDs strip -->
+                        <g transform="translate(95, 170)">
+                            <circle cx="0" cy="0" r="3" fill="#22d3ee" class="led"/>
+                            <circle cx="10" cy="0" r="3" fill="#22d3ee" class="led d2"/>
+                            <circle cx="20" cy="0" r="3" fill="#10b981" class="led d3"/>
+                            <circle cx="30" cy="0" r="3" fill="#22d3ee" class="led d4"/>
+                        </g>
+                        <!-- Ports (12 x 25G + 2 x 100G) -->
+                        <g transform="translate(155, 200)">
+                            <rect x="0" y="0" width="9" height="9" rx="1" fill="#1e293b" stroke="#22d3ee" stroke-width="0.5"/>
+                            <rect x="12" y="0" width="9" height="9" rx="1" fill="#1e293b" stroke="#22d3ee" stroke-width="0.5"/>
+                            <rect x="24" y="0" width="9" height="9" rx="1" fill="#1e293b" stroke="#22d3ee" stroke-width="0.5"/>
+                            <rect x="36" y="0" width="9" height="9" rx="1" fill="#1e293b" stroke="#22d3ee" stroke-width="0.5"/>
+                            <rect x="48" y="0" width="9" height="9" rx="1" fill="#1e293b" stroke="#22d3ee" stroke-width="0.5"/>
+                            <rect x="60" y="0" width="9" height="9" rx="1" fill="#1e293b" stroke="#22d3ee" stroke-width="0.5"/>
+                            <rect x="72" y="0" width="9" height="9" rx="1" fill="#1e293b" stroke="#22d3ee" stroke-width="0.5"/>
+                            <rect x="84" y="0" width="9" height="9" rx="1" fill="#1e293b" stroke="#22d3ee" stroke-width="0.5"/>
+                            <rect x="96" y="0" width="9" height="9" rx="1" fill="#1e293b" stroke="#22d3ee" stroke-width="0.5"/>
+                            <rect x="108" y="0" width="9" height="9" rx="1" fill="#1e293b" stroke="#22d3ee" stroke-width="0.5"/>
+                            <rect x="120" y="0" width="9" height="9" rx="1" fill="#1e293b" stroke="#22d3ee" stroke-width="0.5"/>
+                            <rect x="132" y="0" width="9" height="9" rx="1" fill="#1e293b" stroke="#22d3ee" stroke-width="0.5"/>
+                            <!-- 100G ports bigger -->
+                            <rect x="148" y="-2" width="14" height="13" rx="2" fill="#082f49" stroke="#22d3ee" stroke-width="1"/>
+                            <rect x="166" y="-2" width="14" height="13" rx="2" fill="#082f49" stroke="#22d3ee" stroke-width="1"/>
+                        </g>
+                        <!-- Labels -->
+                        <text x="200" y="132" fill="white" font-size="15" font-weight="700" text-anchor="middle">MikroTik CCR2216</text>
+                        <text x="200" y="252" fill="#94a3b8" font-size="11" text-anchor="middle">Gateway · NAT · BGP · ACL · VPN</text>
+                        <text x="200" y="268" fill="#22d3ee" font-size="10" font-weight="700" text-anchor="middle" letter-spacing="1">12×25G + 2×100G</text>
+                    </g>
+
+                    <!-- ======== AI NODE ======== -->
+                    <g class="svg-node" style="animation-delay: 0.3s;">
+                        <ellipse cx="1200" cy="195" rx="160" ry="50" fill="#ec4899" opacity="0.08" filter="url(#soft-glow)" class="node-glow"/>
+                        <rect x="1080" y="150" width="240" height="80" rx="10" fill="url(#grad-device-ai)" stroke="#ec4899" stroke-width="1.5"/>
+                        <rect x="1080" y="150" width="240" height="8" fill="#0f172a"/>
+                        <rect x="1080" y="222" width="240" height="8" fill="#0f172a"/>
+
+                        <!-- Chip with brain -->
+                        <g transform="translate(1115, 172)">
+                            <rect x="0" y="0" width="40" height="40" rx="6" fill="#1a0b2e" stroke="#ec4899" stroke-width="1"/>
+                            <!-- Circuit traces -->
+                            <path d="M -5 8 L 0 8 M -5 20 L 0 20 M -5 32 L 0 32 M 40 8 L 45 8 M 40 20 L 45 20 M 40 32 L 45 32 M 8 -5 L 8 0 M 20 -5 L 20 0 M 32 -5 L 32 0"
+                                stroke="#ec4899" stroke-width="0.6" opacity="0.6"/>
+                            <!-- Brain icon -->
+                            <path d="M 13 25 Q 10 22 13 18 Q 10 14 15 13 Q 17 10 20 12 Q 23 10 25 13 Q 30 14 27 18 Q 30 22 27 25 Q 25 28 22 26 Q 20 28 18 26 Q 15 28 13 25 Z"
+                                fill="none" stroke="#f472b6" stroke-width="1" stroke-linejoin="round"/>
+                            <line x1="20" y1="13" x2="20" y2="26" stroke="#f472b6" stroke-width="0.6" opacity="0.7"/>
+                        </g>
+                        <!-- 100G ports (2) -->
+                        <g transform="translate(1180, 195)">
+                            <rect x="0" y="-2" width="16" height="14" rx="2" fill="#3b0764" stroke="#ec4899" stroke-width="1"/>
+                            <rect x="22" y="-2" width="16" height="14" rx="2" fill="#3b0764" stroke="#ec4899" stroke-width="1"/>
+                            <!-- NVMe style LEDs -->
+                            <circle cx="60" cy="5" r="2.5" fill="#ec4899" class="led d2"/>
+                            <circle cx="72" cy="5" r="2.5" fill="#a855f7" class="led d3"/>
+                            <circle cx="84" cy="5" r="2.5" fill="#ec4899" class="led d4"/>
+                            <circle cx="96" cy="5" r="2.5" fill="#22d3ee" class="led"/>
+                        </g>
+                        <text x="1200" y="132" fill="white" font-size="15" font-weight="700" text-anchor="middle">Nodo de IA · Alta Velocidad</text>
+                        <text x="1200" y="252" fill="#94a3b8" font-size="11" text-anchor="middle">Spark / Titán + Almacenamiento NVMe</text>
+                        <text x="1200" y="268" fill="#ec4899" font-size="10" font-weight="700" text-anchor="middle" letter-spacing="1">2×100G DIRECTO AL NÚCLEO</text>
+                    </g>
+
+                    <!-- ======== CISCO NEXUS CORE ======== -->
+                    <g class="svg-node" style="animation-delay: 0.4s;">
+                        <ellipse cx="700" cy="370" rx="220" ry="70" fill="#3b82f6" opacity="0.1" filter="url(#soft-glow)" class="node-glow"/>
+                        <rect x="540" y="310" width="320" height="110" rx="14" fill="url(#grad-device-core)" stroke="#3b82f6" stroke-width="1.8"/>
+                        <rect x="540" y="310" width="320" height="10" fill="#0c1e4a"/>
+                        <rect x="540" y="410" width="320" height="10" fill="#0c1e4a"/>
+
+                        <!-- Center octagonal core (like in the image) -->
+                        <g transform="translate(700, 365)">
+                            <polygon points="-22,-10 -10,-22 10,-22 22,-10 22,10 10,22 -10,22 -22,10" fill="#0f172a" stroke="#60a5fa" stroke-width="1.2"/>
+                            <circle cx="0" cy="0" r="10" fill="#1e3a8a" stroke="#60a5fa" stroke-width="1"/>
+                            <circle cx="0" cy="0" r="5" fill="#60a5fa" class="led"/>
+                            <text x="0" y="3" fill="white" font-size="6" font-weight="700" text-anchor="middle" letter-spacing="0.5">CORE</text>
+                        </g>
+
+                        <!-- Ports top row -->
+                        <g transform="translate(562, 328)">
+                            <!-- 16 ports -->
+                            <rect x="0" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="17" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="34" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="51" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="68" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="85" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="102" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="119" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <!-- gap for central chip -->
+                            <rect x="173" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="190" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="207" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="224" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="241" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="258" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="275" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="292" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                        </g>
+                        <!-- Ports bottom row -->
+                        <g transform="translate(562, 390)">
+                            <rect x="0" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="17" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="34" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="51" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="68" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="85" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="102" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="119" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="173" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="190" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="207" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="224" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="241" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="258" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="275" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                            <rect x="292" y="0" width="14" height="12" rx="1.5" fill="#0c1e4a" stroke="#60a5fa" stroke-width="0.6"/>
+                        </g>
+
+                        <text x="700" y="300" fill="white" font-size="16" font-weight="700" text-anchor="middle">Cisco Nexus 3232T · Switch Central</text>
+                        <text x="700" y="440" fill="#60a5fa" font-size="10" font-weight="700" text-anchor="middle" letter-spacing="2">32 × 100G · 6,4 Tbps · vPC PEER</text>
+                    </g>
+
+                    <!-- ======== LINK: GATEWAY <-> NEXUS (2×100G vPC/LACP) ======== -->
+                    <g class="svg-node" style="animation-delay: 0.55s;">
+                        <!-- Fiber-like glow background -->
+                        <path d="M 320 190 C 500 190, 540 320, 670 355"
+                              stroke="#22d3ee" stroke-width="14" fill="none" opacity="0.08" stroke-linecap="round"/>
+                        <!-- Two parallel 100G lines (LACP aggregation) -->
+                        <path d="M 320 185 C 500 185, 540 310, 670 345"
+                              stroke="url(#grad-100g)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M 320 200 C 500 200, 540 325, 670 365"
+                              stroke="url(#grad-100g)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <!-- Animated flow overlay on one strand -->
+                        <path d="M 320 185 C 500 185, 540 310, 670 345"
+                              stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round"
+                              class="link-100g" opacity="0.9"/>
+                        <path d="M 320 200 C 500 200, 540 325, 670 365"
+                              stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round"
+                              class="link-100g" opacity="0.9" style="animation-delay: -0.55s;"/>
+                        <!-- vPC/LACP badge -->
+                        <g transform="translate(480, 245)">
+                            <rect x="-78" y="-16" width="156" height="32" rx="16" fill="#0891b2" stroke="#22d3ee" stroke-width="1"/>
+                            <text x="0" y="-2" fill="white" font-size="12" font-weight="800" text-anchor="middle" letter-spacing="1.5">200G vPC / LACP</text>
+                            <text x="0" y="10" fill="#cffafe" font-size="8.5" text-anchor="middle" letter-spacing="0.5">2 × 100G · ACTIVE-ACTIVE</text>
+                        </g>
+                        <text x="480" y="295" fill="#7dd3fc" font-size="10" text-anchor="middle" opacity="0.85">Fibra MPO/MTP-12 · Sin single-point-of-failure</text>
+
+                        <!-- Packets across both strands -->
+                        <circle r="6" fill="url(#packet-cyan)">
+                            <animateMotion dur="2.2s" repeatCount="indefinite">
+                                <mpath href="#path-gw-nexus"/>
+                            </animateMotion>
+                        </circle>
+                        <circle r="5" fill="url(#packet-cyan)">
+                            <animateMotion dur="2.2s" begin="0.55s" repeatCount="indefinite">
+                                <mpath href="#path-gw-nexus-2"/>
+                            </animateMotion>
+                        </circle>
+                        <circle r="5" fill="url(#packet-cyan)">
+                            <animateMotion dur="2.2s" begin="1.1s" repeatCount="indefinite">
+                                <mpath href="#path-gw-nexus"/>
+                            </animateMotion>
+                        </circle>
+                        <circle r="4" fill="url(#packet-cyan)">
+                            <animateMotion dur="2.2s" begin="1.65s" repeatCount="indefinite">
+                                <mpath href="#path-gw-nexus-2"/>
+                            </animateMotion>
+                        </circle>
+                    </g>
+
+                    <!-- ======== LINK: NEXUS <-> AI NODE (2x100G) ======== -->
+                    <g class="svg-node" style="animation-delay: 0.6s;">
+                        <path d="M 740 350 C 900 260, 1000 220, 1120 195"
+                              stroke="#ec4899" stroke-width="10" fill="none" opacity="0.08" stroke-linecap="round"/>
+                        <path d="M 740 350 C 900 260, 1000 220, 1120 195"
+                              stroke="url(#grad-ai)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M 740 365 C 900 290, 1000 240, 1120 210"
+                              stroke="url(#grad-ai)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M 740 350 C 900 260, 1000 220, 1120 195"
+                              stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round"
+                              class="link-ai" opacity="0.9"/>
+                        <!-- Badge -->
+                        <g transform="translate(930, 250)">
+                            <rect x="-72" y="-16" width="144" height="32" rx="16" fill="#be185d" stroke="#ec4899" stroke-width="1"/>
+                            <text x="0" y="-2" fill="white" font-size="12" font-weight="800" text-anchor="middle" letter-spacing="1.5">200G vPC / LACP</text>
+                            <text x="0" y="10" fill="#fce7f3" font-size="8.5" text-anchor="middle" letter-spacing="0.5">2 × 100G · DEDICADO IA</text>
+                        </g>
+                        <!-- Packets -->
+                        <circle r="6" fill="url(#packet-pink)">
+                            <animateMotion dur="1.8s" repeatCount="indefinite">
+                                <mpath href="#path-nexus-ai"/>
+                            </animateMotion>
+                        </circle>
+                        <circle r="5" fill="url(#packet-pink)">
+                            <animateMotion dur="1.8s" begin="0.5s" repeatCount="indefinite">
+                                <mpath href="#path-nexus-ai-2"/>
+                            </animateMotion>
+                        </circle>
+                        <circle r="5" fill="url(#packet-pink)">
+                            <animateMotion dur="1.8s" begin="0.9s" repeatCount="indefinite">
+                                <mpath href="#path-nexus-ai"/>
+                            </animateMotion>
+                        </circle>
+                    </g>
+
+                    <!-- ======== 40G UPLINK BADGE (floating label) ======== -->
+                    <g class="svg-node" style="animation-delay: 0.7s;">
+                        <g transform="translate(1050, 500)">
+                            <rect x="-78" y="-16" width="156" height="32" rx="16" fill="#b45309" stroke="#f59e0b" stroke-width="1"/>
+                            <text x="0" y="-2" fill="white" font-size="11" font-weight="800" text-anchor="middle" letter-spacing="1">UPLINK 40G × 22</text>
+                            <text x="0" y="10" fill="#fef3c7" font-size="9" text-anchor="middle">QSFP+ SR4</text>
+                        </g>
+                    </g>
+
+                    <!-- ======== UPLINKS + RACKS (generated by JS) ======== -->
+                    <g id="uplink-layer"></g>
+                    <g id="rack-layer"></g>
+                    <g id="packet-layer"></g>
+
+                    <!-- ======== CAPACITY BADGE BOTTOM ======== -->
+                    <g class="svg-node" style="animation-delay: 1.2s;">
+                        <g transform="translate(700, 920)">
+                            <rect x="-220" y="-20" width="440" height="40" rx="20" fill="#0f172a" stroke="#76b900" stroke-width="1.5"/>
+                            <circle cx="-185" cy="0" r="6" fill="#76b900" class="led"/>
+                            <text x="0" y="5" fill="white" font-size="13" font-weight="700" text-anchor="middle" letter-spacing="1.5">22 RACKS × 48 × 1G = 1 056 PUERTOS DE ACCESO</text>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+
+            <!-- ============================= -->
+            <!-- LAYER CARDS                   -->
+            <!-- ============================= -->
+            <div class="layer-grid">
+                <div class="layer-card" style="--layer-color: var(--c-100g);">
+                    <div class="layer-head">
+                        <div class="layer-icon"><i data-lucide="shield" style="width:24px; height:24px;"></i></div>
+                        <div>
+                            <div class="layer-tag">Capa 1</div>
+                            <h3>Perímetro</h3>
+                        </div>
+                    </div>
+                    <p>El <strong>MikroTik CCR2216</strong> actúa como gateway único frente a la red educativa regional. Gestiona toda la lógica de frontera antes de que el tráfico entre en el fabric interno.</p>
+                    <ul>
+                        <li><strong>NAT / BGP</strong> — enrutamiento dinámico hacia redes externas.</li>
+                        <li><strong>ACL</strong> — segmentación por VLAN/VRF de tráfico docente, alumnado e IA.</li>
+                        <li><strong>VPN site-to-site</strong> — canal cifrado para administración remota.</li>
+                        <li><strong>2×100G QSFP28</strong> — salida al switch central vía LACP.</li>
+                    </ul>
+                </div>
+
+                <div class="layer-card" style="--layer-color: #3b82f6;">
+                    <div class="layer-head">
+                        <div class="layer-icon"><i data-lucide="server-cog" style="width:24px; height:24px;"></i></div>
+                        <div>
+                            <div class="layer-tag">Capa 2</div>
+                            <h3>Núcleo · Nexus 3232T</h3>
+                        </div>
+                    </div>
+                    <p>El <strong>Cisco Nexus 3232T</strong> opera como fabric <em>non-blocking</em> de <strong>32 × 100 GbE</strong> (6,4 Tbps, latencia sub-microsegundo), conmutando en línea cualquier flujo entre perímetro, nodo de IA y capa de acceso.</p>
+                    <ul>
+                        <li><strong>2×100G vPC/LACP al gateway</strong> — autopista de 200 Gbps activa-activa hacia la MikroTik CCR2216.</li>
+                        <li><strong>2×100G vPC/LACP al nodo IA</strong> — otros 200 Gbps dedicados al Spark/Titán.</li>
+                        <li><strong>22×40G QSFP+ SR4</strong> — uplinks hacia los racks de acceso.</li>
+                        <li><strong>NX-OS + VXLAN/EVPN</strong> — plano de control moderno, <em>MLAG</em> vía vPC sin loops STP.</li>
+                    </ul>
+                </div>
+
+                <div class="layer-card" style="--layer-color: var(--c-40g);">
+                    <div class="layer-head">
+                        <div class="layer-icon"><i data-lucide="layout-grid" style="width:24px; height:24px;"></i></div>
+                        <div>
+                            <div class="layer-tag">Capa 3</div>
+                            <h3>Acceso</h3>
+                        </div>
+                    </div>
+                    <p>Cada uno de los <strong>22 racks</strong> lleva un <strong>MikroTik CRS354</strong>: 48 puertos gigabit para dispositivos finales más un uplink de 40 G contra el núcleo.</p>
+                    <ul>
+                        <li><strong>48×1G RJ45</strong> — equipos de aula, estaciones y AP.</li>
+                        <li><strong>1×40G QSFP+</strong> — uplink al Nexus central.</li>
+                        <li><strong>PoE+ opcional</strong> para pasarela de periféricos.</li>
+                        <li><strong>1 056 puertos</strong> agregados en todo el CPD.</li>
+                    </ul>
                 </div>
             </div>
+
+            <!-- ============================= -->
+            <!-- NEXUS 3232T DEEP-DIVE         -->
+            <!-- ============================= -->
+            <section class="nexus-deepdive">
+                <div class="nd-left">
+                    <div class="nd-eyebrow">SWITCH CENTRAL</div>
+                    <h2>Cisco Nexus <span>3232T</span></h2>
+                    <p class="nd-lead">32 puertos 100 GbE QSFP28 en formato 1U, con latencia <em>cut-through</em> sub-microsegundo y conmutación <em>non-blocking</em> de 6,4 Tbps. El motor que mueve todo el tráfico entre perímetro, nodo de IA y 22 racks de acceso.</p>
+
+                    <div class="nd-specs">
+                        <div class="nd-spec">
+                            <i data-lucide="gauge"></i>
+                            <div>
+                                <strong>6,4 Tbps</strong>
+                                <span>Fabric non-blocking</span>
+                            </div>
+                        </div>
+                        <div class="nd-spec">
+                            <i data-lucide="timer"></i>
+                            <div>
+                                <strong>&lt; 1 µs</strong>
+                                <span>Latencia cut-through</span>
+                            </div>
+                        </div>
+                        <div class="nd-spec">
+                            <i data-lucide="shuffle"></i>
+                            <div>
+                                <strong>2,38 Bpps</strong>
+                                <span>Forwarding rate L2/L3</span>
+                            </div>
+                        </div>
+                        <div class="nd-spec">
+                            <i data-lucide="layers-3"></i>
+                            <div>
+                                <strong>32 × 100G</strong>
+                                <span>QSFP28 · breakout 4×25G</span>
+                            </div>
+                        </div>
+                        <div class="nd-spec">
+                            <i data-lucide="terminal"></i>
+                            <div>
+                                <strong>NX-OS</strong>
+                                <span>VXLAN · BGP EVPN · vPC</span>
+                            </div>
+                        </div>
+                        <div class="nd-spec">
+                            <i data-lucide="wind"></i>
+                            <div>
+                                <strong>1 RU</strong>
+                                <span>Airflow reversible · dual PSU</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Highway visualization -->
+                <div class="nd-right">
+                    <div class="nd-highway-title">
+                        <i data-lucide="git-merge" style="width:18px; height:18px;"></i>
+                        Autopistas vPC / LACP <strong>200 Gbps</strong>
+                    </div>
+                    <p class="nd-highway-sub">Dos agregaciones <em>active-active</em> que eliminan el single-point-of-failure entre perímetro, núcleo y cómputo.</p>
+
+                    <div class="highway">
+                        <div class="hw-end hw-mikrotik">
+                            <i data-lucide="shield" style="width:18px; height:18px;"></i>
+                            <div>
+                                <strong>MikroTik CCR2216</strong>
+                                <span>Gateway perimetral</span>
+                            </div>
+                        </div>
+                        <div class="hw-pipe">
+                            <div class="hw-pipe-label">200 Gbps · 2 × 100G LACP</div>
+                            <div class="hw-pipe-track">
+                                <div class="hw-pipe-flow" style="--flow-color: #22d3ee;"></div>
+                                <div class="hw-pipe-flow" style="--flow-color: #22d3ee; --delay: -1s;"></div>
+                            </div>
+                        </div>
+                        <div class="hw-end hw-nexus">
+                            <i data-lucide="server-cog" style="width:18px; height:18px;"></i>
+                            <div>
+                                <strong>Nexus 3232T</strong>
+                                <span>Switch central</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highway">
+                        <div class="hw-end hw-nexus">
+                            <i data-lucide="server-cog" style="width:18px; height:18px;"></i>
+                            <div>
+                                <strong>Nexus 3232T</strong>
+                                <span>Switch central</span>
+                            </div>
+                        </div>
+                        <div class="hw-pipe">
+                            <div class="hw-pipe-label">200 Gbps · 2 × 100G LACP</div>
+                            <div class="hw-pipe-track">
+                                <div class="hw-pipe-flow" style="--flow-color: #ec4899;"></div>
+                                <div class="hw-pipe-flow" style="--flow-color: #ec4899; --delay: -1.2s;"></div>
+                            </div>
+                        </div>
+                        <div class="hw-end hw-ai">
+                            <i data-lucide="brain-circuit" style="width:18px; height:18px;"></i>
+                            <div>
+                                <strong>Nodo IA</strong>
+                                <span>Spark / Titán + NVMe</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nd-vpc-notes">
+                        <div class="nd-vpc-item">
+                            <i data-lucide="check-circle-2" style="width:16px; height:16px; color: #22c55e;"></i>
+                            <span><strong>vPC (virtual PortChannel):</strong> un único PortChannel lógico con los dos enlaces físicos como miembros activos.</span>
+                        </div>
+                        <div class="nd-vpc-item">
+                            <i data-lucide="check-circle-2" style="width:16px; height:16px; color: #22c55e;"></i>
+                            <span><strong>LACP 802.3ad:</strong> negociación dinámica de miembros con <em>hashing</em> por 5-tupla para balanceo por flujo.</span>
+                        </div>
+                        <div class="nd-vpc-item">
+                            <i data-lucide="check-circle-2" style="width:16px; height:16px; color: #22c55e;"></i>
+                            <span><strong>Failover sub-segundo:</strong> si un puerto/fibra cae, el tráfico sigue a 100 G por el enlace superviviente sin intervención.</span>
+                        </div>
+                        <div class="nd-vpc-item">
+                            <i data-lucide="check-circle-2" style="width:16px; height:16px; color: #22c55e;"></i>
+                            <span><strong>Sin STP bloqueante:</strong> ambos enlaces forwarding simultáneos — el doble de capacidad real que un bond pasivo.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================= -->
+            <!-- METRICS                       -->
+            <!-- ============================= -->
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-value" data-count="200" data-suffix=" Gbps">0</div>
+                    <div class="metric-label">Troncal LACP</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" data-count="3200" data-suffix=" Gbps">0</div>
+                    <div class="metric-label">Fabric Nexus</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" data-count="22" data-suffix=" × 40G">0</div>
+                    <div class="metric-label">Uplinks de rack</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" data-count="1056" data-suffix="">0</div>
+                    <div class="metric-label">Puertos de acceso</div>
+                </div>
+            </div>
+
+            <!-- ============================= -->
+            <!-- CAPACITY TABLE                -->
+            <!-- ============================= -->
+            <div class="capacity-section">
+                <h2>Resumen técnico de capacidad</h2>
+                <p class="sub">Dispositivos clave del CPD, capacidad de puertos y función principal en la topología.</p>
+
+                <div style="overflow-x: auto;">
+                    <table class="cap-table">
+                        <thead>
+                            <tr>
+                                <th>Dispositivo</th>
+                                <th>Capacidad de puertos</th>
+                                <th>Capa</th>
+                                <th>Función principal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="dev-badge" style="--dev-color: var(--c-100g);">MikroTik CCR2216</span></td>
+                                <td>
+                                    <span class="port-chip p-25">12×25G</span>
+                                    <span class="port-chip p-100">2×100G</span>
+                                </td>
+                                <td>Perímetro</td>
+                                <td>Gateway · NAT · BGP · ACL · VPN</td>
+                            </tr>
+                            <tr>
+                                <td><span class="dev-badge" style="--dev-color: #3b82f6;">Cisco Nexus 3232T</span></td>
+                                <td>
+                                    <span class="port-chip p-100">32×100G</span>
+                                </td>
+                                <td>Núcleo</td>
+                                <td>Fabric non-blocking 6,4 Tbps · vPC/LACP peer</td>
+                            </tr>
+                            <tr>
+                                <td><span class="dev-badge" style="--dev-color: var(--c-40g);">MikroTik CRS354 (×22)</span></td>
+                                <td>
+                                    <span class="port-chip p-1">48×1G</span>
+                                    <span class="port-chip p-40">1×40G</span>
+                                </td>
+                                <td>Acceso</td>
+                                <td>Acceso de usuarios · Uplink a núcleo</td>
+                            </tr>
+                            <tr>
+                                <td><span class="dev-badge" style="--dev-color: var(--c-ai);">Nodo IA (Spark/Titán)</span></td>
+                                <td>
+                                    <span class="port-chip p-100">2×100G</span>
+                                </td>
+                                <td>Cómputo</td>
+                                <td>Enlace directo al núcleo · Almacenamiento NVMe</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="index.html" class="cta-button" style="background: var(--text-primary);">
+                    <i data-lucide="arrow-left"></i> Volver al Inicio
+                </a>
+            </div>
+
         </article>
     </main>
 
@@ -140,6 +1281,206 @@
     </footer>
 
     <script src="script.js"></script>
+
+    <!-- ================= RACKS + UPLINKS GENERATOR ================= -->
+    <script>
+        (function () {
+            const SVGNS = 'http://www.w3.org/2000/svg';
+            const rackLayer = document.getElementById('rack-layer');
+            const uplinkLayer = document.getElementById('uplink-layer');
+            const packetLayer = document.getElementById('packet-layer');
+
+            // Nexus bottom anchor (emanation point for uplinks)
+            const NEXUS_X = 700;
+            const NEXUS_Y = 420;
+
+            const RACK_COUNT = 22;
+            const ROWS = 2;
+            const PER_ROW = 11;
+            const RACK_W = 80;
+            const RACK_H = 120;
+            const GAP_X = 14;
+            const ROW_Y = [600, 770];
+
+            const totalW = PER_ROW * RACK_W + (PER_ROW - 1) * GAP_X;
+            const START_X = (1400 - totalW) / 2;
+
+            function el(tag, attrs) {
+                const e = document.createElementNS(SVGNS, tag);
+                for (const k in attrs) e.setAttribute(k, attrs[k]);
+                return e;
+            }
+
+            for (let i = 0; i < RACK_COUNT; i++) {
+                const row = Math.floor(i / PER_ROW);
+                const col = i % PER_ROW;
+                const x = START_X + col * (RACK_W + GAP_X);
+                const y = ROW_Y[row];
+                const topX = x + RACK_W / 2;
+                const topY = y;
+
+                // ---- Uplink path (curved from Nexus bottom to rack top) ----
+                const midY = (NEXUS_Y + topY) / 2;
+                const pathD = `M ${NEXUS_X} ${NEXUS_Y} C ${NEXUS_X} ${midY + 30}, ${topX} ${midY - 20}, ${topX} ${topY}`;
+
+                // Glow backing
+                const glow = el('path', {
+                    d: pathD,
+                    stroke: '#f59e0b',
+                    'stroke-width': '5',
+                    fill: 'none',
+                    opacity: '0.08',
+                    'stroke-linecap': 'round'
+                });
+                uplinkLayer.appendChild(glow);
+
+                // Main gradient line
+                const line = el('path', {
+                    d: pathD,
+                    stroke: 'url(#grad-40g)',
+                    'stroke-width': '1.5',
+                    fill: 'none',
+                    opacity: '0.85',
+                    'stroke-linecap': 'round'
+                });
+                uplinkLayer.appendChild(line);
+
+                // Flow overlay
+                const flow = el('path', {
+                    d: pathD,
+                    stroke: '#fde68a',
+                    'stroke-width': '1',
+                    fill: 'none',
+                    'stroke-linecap': 'round',
+                    class: 'link-40g',
+                    opacity: '0.85'
+                });
+                uplinkLayer.appendChild(flow);
+
+                // Hidden path for packet motion
+                const motionPath = el('path', {
+                    id: `uplink-path-${i}`,
+                    d: pathD,
+                    fill: 'none',
+                    stroke: 'none'
+                });
+                uplinkLayer.appendChild(motionPath);
+
+                // ---- Animated packet (1 per rack for performance) ----
+                const packet = el('circle', { r: '3.5', fill: 'url(#packet-orange)' });
+                const motion = el('animateMotion', {
+                    dur: (2.6 + (i % 5) * 0.25) + 's',
+                    begin: ((i * 0.12) % 2.5) + 's',
+                    repeatCount: 'indefinite'
+                });
+                const mpath = el('mpath', { href: `#uplink-path-${i}` });
+                motion.appendChild(mpath);
+                packet.appendChild(motion);
+                packetLayer.appendChild(packet);
+
+                // ---- Rack SVG ----
+                const rack = el('g', {
+                    class: 'svg-node rack-unit',
+                    style: `animation-delay: ${0.8 + i * 0.03}s; transform-origin: ${topX}px ${y}px;`
+                });
+
+                // Shadow
+                rack.appendChild(el('ellipse', {
+                    cx: topX, cy: y + RACK_H + 6, rx: RACK_W / 2 - 4, ry: 3,
+                    fill: '#000', opacity: '0.35', filter: 'url(#soft-glow)'
+                }));
+
+                // Cabinet body
+                rack.appendChild(el('rect', {
+                    x: x, y: y, width: RACK_W, height: RACK_H, rx: 6,
+                    fill: 'url(#grad-rack)', stroke: '#475569', 'stroke-width': '1'
+                }));
+                // Top cap (where uplink lands)
+                rack.appendChild(el('rect', {
+                    x: x, y: y, width: RACK_W, height: 14,
+                    fill: '#f59e0b', opacity: '0.85'
+                }));
+                // Uplink port highlight
+                rack.appendChild(el('rect', {
+                    x: topX - 6, y: y - 4, width: 12, height: 8, rx: 2,
+                    fill: '#1e293b', stroke: '#fbbf24', 'stroke-width': '1'
+                }));
+
+                // Internal "units" (simulating 1U slots with LEDs)
+                const units = 8;
+                for (let u = 0; u < units; u++) {
+                    const uy = y + 22 + u * 11;
+                    rack.appendChild(el('rect', {
+                        x: x + 4, y: uy, width: RACK_W - 8, height: 8, rx: 1,
+                        fill: '#0f172a', stroke: '#1e293b', 'stroke-width': '0.5'
+                    }));
+                    // LEDs per slot
+                    const dots = 4;
+                    for (let d = 0; d < dots; d++) {
+                        const led = el('circle', {
+                            cx: x + 10 + d * 6, cy: uy + 4, r: '1.2',
+                            fill: ['#22d3ee', '#76b900', '#f59e0b', '#ec4899'][d],
+                            class: 'led' + (d > 0 ? ' d' + (d + 1) : '')
+                        });
+                        led.style.animationDelay = ((i * 0.07 + d * 0.1) % 1.6) + 's';
+                        rack.appendChild(led);
+                    }
+                }
+
+                // Rack label
+                const label = el('text', {
+                    x: topX, y: y + RACK_H + 18,
+                    fill: '#cbd5e1', 'font-size': '9', 'text-anchor': 'middle', 'font-weight': '700'
+                });
+                label.textContent = `CRS354-${String(i + 1).padStart(2, '0')}`;
+                rack.appendChild(label);
+
+                // Port count sublabel (only on first row to avoid clutter)
+                if (row === 0) {
+                    const sub = el('text', {
+                        x: topX, y: y + RACK_H + 30,
+                        fill: '#64748b', 'font-size': '7.5', 'text-anchor': 'middle'
+                    });
+                    sub.textContent = '48×1G';
+                    rack.appendChild(sub);
+                }
+
+                rackLayer.appendChild(rack);
+            }
+        })();
+
+        // ================= METRIC COUNTER ANIMATION =================
+        (function () {
+            const cards = document.querySelectorAll('.metric-value');
+            if (!('IntersectionObserver' in window)) {
+                cards.forEach(c => {
+                    c.textContent = Number(c.dataset.count).toLocaleString('es-ES') + (c.dataset.suffix || '');
+                });
+                return;
+            }
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    const el = entry.target;
+                    const target = Number(el.dataset.count);
+                    const suffix = el.dataset.suffix || '';
+                    const duration = 1400;
+                    const start = performance.now();
+                    function step(now) {
+                        const t = Math.min(1, (now - start) / duration);
+                        const eased = 1 - Math.pow(1 - t, 3);
+                        const v = Math.floor(target * eased);
+                        el.textContent = v.toLocaleString('es-ES') + suffix;
+                        if (t < 1) requestAnimationFrame(step);
+                        else el.textContent = target.toLocaleString('es-ES') + suffix;
+                    }
+                    requestAnimationFrame(step);
+                    obs.unobserve(el);
+                });
+            }, { threshold: 0.4 });
+            cards.forEach(c => obs.observe(c));
+        })();
+    </script>
 </body>
 
 </html>
