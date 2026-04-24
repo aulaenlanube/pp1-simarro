@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Spark NVFP4 - PP1-Simarro</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="style.css?v=1.1">
+    <style>
+        .hero-mini {
+            padding: 60px 5% 10px;
+            text-align: center;
+            background: transparent;
+        }
+
+        .hero-mini h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -1.5px;
+        }
+
+        .hero-mini span {
+            color: #8b5cf6;
+        }
+
+        .hero-lead {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 760px;
+            margin: 0 auto 2rem;
+        }
+
+        .manual-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 5% 5rem;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #fdfdfd;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.04) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(0, 115, 207, 0.03) 0px, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .manual-section {
+            margin-top: 3rem;
+            animation: fadeInUp 0.8s ease-out;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .header-icon {
+            width: 54px;
+            height: 54px;
+            background: var(--text-primary);
+            color: white;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .header-icon i {
+            width: 28px;
+            height: 28px;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        /* Highlight cards */
+        .highlight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .highlight-card {
+            padding: 1.3rem 1.4rem;
+            border-radius: 16px;
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        .highlight-card i {
+            color: #8b5cf6;
+            width: 26px;
+            height: 26px;
+            margin-bottom: 0.7rem;
+        }
+
+        .highlight-card h4 {
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            font-size: 1rem;
+        }
+
+        .highlight-card p {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+
+        /* Code block */
+        .code-block-container {
+            background: #0d1117;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid #30363d;
+            margin-top: 1.5rem;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 24px;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .code-title {
+            color: #8b949e;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .copy-button {
+            background: rgba(240, 246, 252, 0.05);
+            border: 1px solid rgba(240, 246, 252, 0.1);
+            color: #c9d1d9;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        .copy-button:hover {
+            background: rgba(240, 246, 252, 0.1);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .copy-button.success {
+            background: #238636;
+            border-color: #2ea043;
+            color: white;
+        }
+
+        pre {
+            margin: 0;
+            padding: 24px;
+            overflow-x: auto;
+            color: #e6edf3;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.92rem;
+            line-height: 1.7;
+        }
+
+        code {
+            font-family: inherit;
+        }
+
+        /* Syntax highlighting */
+        .c-comment { color: #8b949e; font-style: italic; }
+        .c-keyword { color: #ff7b72; }
+        .c-string { color: #a5d6ff; }
+        .c-var { color: #79c0ff; }
+        .c-const { color: #d2a8ff; }
+
+        /* Annotated list */
+        .annotated-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .annotated-list .row {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 1.5rem;
+            padding: 1rem 1.2rem;
+            background: #fafbfc;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            align-items: baseline;
+        }
+
+        .annotated-list .row code.flag {
+            font-family: 'JetBrains Mono', monospace;
+            color: #6b46c1;
+            font-size: 0.85rem;
+            background: rgba(139, 92, 246, 0.08);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            word-break: break-all;
+            align-self: flex-start;
+        }
+
+        .annotated-list .row p {
+            color: var(--text-secondary);
+            font-size: 0.93rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        @media (max-width: 640px) {
+            .annotated-list .row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Bottom nav */
+        .bottom-nav {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="progress-bar"></div>
+    <div class="bg-glow"></div>
+
+    <header>
+        <div class="logo-container">
+            <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
+                <img src="logo-simarro.webp" alt="Logo IES Simarro" class="logo-img">
+                <div class="logo-info">
+                    <span class="brand-name">PP1-Simarro</span>
+                    <span class="brand-subtitle">Centro de excelencia en IA y BD</span>
+                </div>
+            </a>
+        </div>
+        <nav id="main-nav">
+            <a href="index.html"><i data-lucide="home"></i> INICIO</a>
+            <a href="nodo-spark.html" class="active"><i data-lucide="zap"></i> NODO SPARK</a>
+            <a href="manual-titan.html"><i data-lucide="server"></i> NODO TITÁN</a>
+            <a href="red.html"><i data-lucide="network"></i> RED</a>
+            <a href="https://github.com/aulaenlanube/pp1-simarro" target="_blank" class="github-link"><i
+                    data-lucide="github"></i> GITHUB</a>
+        </nav>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">
+            <i data-lucide="menu"></i>
+        </button>
+    </header>
+
+    <main>
+        <section class="hero-mini">
+            <h1>Manual Spark <span>NVFP4</span></h1>
+            <p class="hero-lead">Despliegue de <strong>Qwen3.5-122B-A10B</strong> con cuantización nativa
+                <strong>NVFP4</strong> sobre una DGX Spark. Ventana de contexto de 256k tokens aprovechando el
+                acelerador FP4 de la arquitectura Blackwell.</p>
+        </section>
+
+        <article class="manual-container">
+
+            <!-- INTRODUCCIÓN -->
+            <section class="manual-section">
+                <div class="section-header">
+                    <div class="header-icon" style="background: #8b5cf6;">
+                        <i data-lucide="sparkles"></i>
+                    </div>
+                    <div>
+                        <h2>¿Por qué esta configuración?</h2>
+                        <p>Una alternativa al Qwen3-Next 80B FP8: más parámetros, más contexto, precisión reducida por hardware.</p>
+                    </div>
+                </div>
+
+                <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.7;">
+                    Esta configuración explota dos características exclusivas de la arquitectura Blackwell (GB10):
+                    los <strong>Tensor Cores de 5ª generación</strong> con soporte nativo de <strong>FP4</strong>
+                    y el acelerador de cuantización <strong>NVFP4</strong>. El formato NVFP4 —un FP4 de
+                    microbloques con escalado E4M3— preserva la calidad del modelo casi al nivel de FP8 mientras
+                    reduce el consumo de VRAM a <em>la mitad</em>. Esto permite cargar un modelo de 122.000 millones
+                    de parámetros (Mixture-of-Experts con 10B activos) manteniendo 256k tokens de contexto en los
+                    128 GB unificados de la DGX Spark.
+                </p>
+
+                <div class="highlight-grid">
+                    <div class="highlight-card">
+                        <i data-lucide="database"></i>
+                        <h4>Modelo 122B A10B</h4>
+                        <p>Mixture-of-Experts con 122 B parámetros totales y 10 B activos por token — calidad de frontier model con coste de inferencia acotado.</p>
+                    </div>
+                    <div class="highlight-card">
+                        <i data-lucide="minimize-2"></i>
+                        <h4>Cuantización NVFP4</h4>
+                        <p>Formato nativo Blackwell que usa bloques FP4 con escalado FP8 — preserva calidad cercana a FP8 con la mitad de memoria.</p>
+                    </div>
+                    <div class="highlight-card">
+                        <i data-lucide="scroll-text"></i>
+                        <h4>Contexto 256k</h4>
+                        <p>262.144 tokens de ventana gracias al <code style="background: rgba(139,92,246,0.1); padding: 1px 5px; border-radius: 4px;">kv-cache-dtype fp8</code>, acelerado por hardware en Blackwell.</p>
+                    </div>
+                    <div class="highlight-card">
+                        <i data-lucide="memory-stick"></i>
+                        <h4>Memoria unificada</h4>
+                        <p>Los 128 GB LPDDR5X compartidos CPU-GPU eliminan transferencias PCIe — todo el modelo reside en un único espacio direccionable.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BUILD -->
+            <section class="manual-section">
+                <div class="section-header">
+                    <div class="header-icon">
+                        <i data-lucide="hammer"></i>
+                    </div>
+                    <div>
+                        <h2>Paso 1: Compilación de la imagen vLLM</h2>
+                        <p>Imagen base personalizada para Grace Blackwell ARM64 con soporte NVFP4.</p>
+                    </div>
+                </div>
+
+                <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.7; margin-bottom: 0;">
+                    Antes de levantar el <code style="background: #f0f2f5; padding: 2px 6px; border-radius: 4px;">docker-compose</code>,
+                    hay que construir la imagen base. Se compila desde el repositorio oficial de vLLM apuntando exclusivamente
+                    a la arquitectura <strong>sm_121</strong> (Blackwell workstation) para minimizar tiempo de compilación y tamaño final.
+                </p>
+
+                <div class="code-block-container">
+                    <div class="code-header">
+                        <span class="code-title"><i data-lucide="terminal"></i> Bash</span>
+                        <button class="copy-button" onclick="copyToClipboard('docker-build-cmd')">
+                            <i data-lucide="copy"></i> Copiar comando
+                        </button>
+                    </div>
+                    <pre id="docker-build-cmd"><code><span class="c-comment"># Entra en la carpeta del código fuente de vLLM antes de ejecutar este build</span>
+<span class="c-keyword">sudo</span> DOCKER_BUILDKIT=1 docker build . \
+  -f docker/Dockerfile \
+  --target vllm-openai \
+  <span class="c-comment"># Plataforma nativa de la CPU Grace (ARM64)</span>
+  --platform linux/arm64 \
+  \
+  <span class="c-comment"># Exprime los 20 núcleos del Grace para acelerar la compilación</span>
+  --build-arg MAX_JOBS=20 \
+  \
+  <span class="c-comment"># CUDA 13.0.1 + arch 12.1 = soporte nativo Blackwell (sm_121)</span>
+  --build-arg CUDA_VERSION=13.0.1 \
+  --build-arg BUILD_BASE_IMAGE=nvidia/cuda:13.0.1-devel-ubuntu22.04 \
+  --build-arg torch_cuda_arch_list=<span class="c-string">"12.1"</span> \
+  \
+  <span class="c-comment"># Saltamos la verificación de wheels para ganar velocidad en el build</span>
+  --build-arg RUN_WHEEL_CHECK=false \
+  \
+  <span class="c-comment"># Nombre final de la imagen que referenciará el docker-compose</span>
+  -t simarro-spark-vllm</code></pre>
+                </div>
+            </section>
+
+            <!-- COMPOSE -->
+            <section class="manual-section">
+                <div class="section-header">
+                    <div class="header-icon" style="background: var(--accent-blue);">
+                        <i data-lucide="layers"></i>
+                    </div>
+                    <div>
+                        <h2>Paso 2: Despliegue con Docker Compose</h2>
+                        <p>Orquestación de vLLM + Open WebUI servida sobre la red interna de Docker.</p>
+                    </div>
+                </div>
+
+                <div class="code-block-container">
+                    <div class="code-header">
+                        <span class="code-title"><i data-lucide="file-code"></i> docker-compose.yml</span>
+                        <button class="copy-button" onclick="copyToClipboard('docker-compose-yaml')">
+                            <i data-lucide="copy"></i> Copiar YAML
+                        </button>
+                    </div>
+                    <pre id="docker-compose-yaml"><code><span class="c-comment"># Definición de los contenedores que trabajan juntos</span>
+<span class="c-keyword">services:</span>
+
+  <span class="c-comment"># ----------------------------------------------------------------</span>
+  <span class="c-comment"># SERVICIO 1: vLLM (motor de inferencia)</span>
+  <span class="c-comment"># ----------------------------------------------------------------</span>
+  <span class="c-keyword">vllm:</span>
+    <span class="c-comment"># Imagen compilada localmente en el paso anterior</span>
+    <span class="c-keyword">image:</span> <span class="c-string">simarro-spark-vllm</span>
+    <span class="c-keyword">container_name:</span> <span class="c-string">qwen-vllm</span>
+
+    <span class="c-comment"># Acceso completo a la memoria compartida del host — crítico para modelos grandes</span>
+    <span class="c-keyword">ipc:</span> <span class="c-string">host</span>
+    <span class="c-keyword">restart:</span> <span class="c-string">unless-stopped</span>
+
+    <span class="c-keyword">ports:</span>
+      - <span class="c-string">"8000:8000"</span>
+
+    <span class="c-keyword">volumes:</span>
+      <span class="c-comment"># Monta la caché de HuggingFace para no re-descargar los 60+ GB del modelo</span>
+      - <span class="c-string">~/.cache/huggingface:/root/.cache/huggingface</span>
+
+    <span class="c-comment"># Comando de arranque (sobreescribe el CMD por defecto de la imagen vLLM)</span>
+    <span class="c-keyword">command:</span> &gt;
+      --model Sehyo/Qwen3.5-122B-A10B-NVFP4
+      --trust-remote-code
+      --tensor-parallel-size 1
+      --max-model-len 262144
+      --gpu-memory-utilization 0.9
+      --kv-cache-dtype fp8
+
+    <span class="c-keyword">deploy:</span>
+      <span class="c-keyword">resources:</span>
+        <span class="c-keyword">reservations:</span>
+          <span class="c-keyword">devices:</span>
+            - <span class="c-keyword">driver:</span> <span class="c-string">nvidia</span>
+              <span class="c-keyword">count:</span> <span class="c-const">1</span>
+              <span class="c-keyword">capabilities:</span> [<span class="c-string">gpu</span>]
+
+  <span class="c-comment"># ----------------------------------------------------------------</span>
+  <span class="c-comment"># SERVICIO 2: Open WebUI (interfaz tipo ChatGPT)</span>
+  <span class="c-comment"># ----------------------------------------------------------------</span>
+  <span class="c-keyword">open-webui:</span>
+    <span class="c-keyword">image:</span> <span class="c-string">ghcr.io/open-webui/open-webui:main</span>
+    <span class="c-keyword">container_name:</span> <span class="c-string">qwen-webui</span>
+    <span class="c-keyword">restart:</span> <span class="c-string">unless-stopped</span>
+
+    <span class="c-keyword">ports:</span>
+      - <span class="c-string">"3000:8080"</span>
+
+    <span class="c-keyword">environment:</span>
+      <span class="c-comment"># Apunta a la API de vLLM usando el nombre del servicio como DNS interno</span>
+      - <span class="c-var">OPENAI_API_BASE_URL</span>=http://vllm:8000/v1
+      <span class="c-comment"># Clave ficticia — el cliente la exige pero vLLM no la valida localmente</span>
+      - <span class="c-var">OPENAI_API_KEY</span>=none
+      <span class="c-comment"># Desactiva el login para acceso directo en entorno local</span>
+      - <span class="c-var">WEBUI_AUTH</span>=False
+
+    <span class="c-keyword">volumes:</span>
+      - <span class="c-string">open-webui-data:/app/backend/data</span>
+
+    <span class="c-keyword">depends_on:</span>
+      <span class="c-keyword">vllm:</span>
+        <span class="c-keyword">condition:</span> <span class="c-string">service_started</span>
+
+<span class="c-comment"># Volúmenes globales gestionados por Docker</span>
+<span class="c-keyword">volumes:</span>
+  <span class="c-keyword">open-webui-data:</span></code></pre>
+                </div>
+            </section>
+
+            <!-- FLAGS EXPLAINED -->
+            <section class="manual-section">
+                <div class="section-header">
+                    <div class="header-icon" style="background: var(--accent-orange);">
+                        <i data-lucide="list-checks"></i>
+                    </div>
+                    <div>
+                        <h2>Paso 3: Desglose de los flags clave de vLLM</h2>
+                        <p>Qué hace cada parámetro del comando de arranque y por qué está ahí.</p>
+                    </div>
+                </div>
+
+                <div class="annotated-list">
+                    <div class="row">
+                        <code class="flag">--model Sehyo/Qwen3.5-122B-A10B-NVFP4</code>
+                        <p>Repositorio del modelo cuantizado publicado en Hugging Face. La variante <em>A10B</em> indica Mixture-of-Experts con 10 B de parámetros activos por token de los 122 B totales.</p>
+                    </div>
+                    <div class="row">
+                        <code class="flag">--trust-remote-code</code>
+                        <p>Autoriza la ejecución del código Python que el repositorio del modelo incluye. Obligatorio en arquitecturas nuevas y cuantizaciones no estándar como NVFP4.</p>
+                    </div>
+                    <div class="row">
+                        <code class="flag">--tensor-parallel-size 1</code>
+                        <p>La DGX Spark presenta una única GPU unificada Blackwell de 128 GB, por lo que no hay paralelismo de tensor: el valor correcto es <code>1</code>.</p>
+                    </div>
+                    <div class="row">
+                        <code class="flag">--max-model-len 262144</code>
+                        <p>Ventana de contexto de 256k tokens (2¹⁸). Permite caber manuales completos, bases de código enteras o varios documentos largos en un solo prompt.</p>
+                    </div>
+                    <div class="row">
+                        <code class="flag">--gpu-memory-utilization 0.9</code>
+                        <p>Reserva el 90 % de los 128 GB unificados para vLLM. El 10 % restante queda libre para el sistema operativo y procesos auxiliares.</p>
+                    </div>
+                    <div class="row">
+                        <code class="flag">--kv-cache-dtype fp8</code>
+                        <p>Cuantiza la caché KV (el historial de atención) a FP8. Es el "truco" que hace caber los 256k tokens junto al modelo en la VRAM — acelerado por hardware en Blackwell.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ARRANQUE -->
+            <section class="manual-section">
+                <div class="section-header">
+                    <div class="header-icon" style="background: #76b900;">
+                        <i data-lucide="play"></i>
+                    </div>
+                    <div>
+                        <h2>Paso 4: Arranque del stack</h2>
+                        <p>Levantar los contenedores y acceder a la interfaz.</p>
+                    </div>
+                </div>
+
+                <div class="code-block-container">
+                    <div class="code-header">
+                        <span class="code-title"><i data-lucide="terminal"></i> Bash</span>
+                        <button class="copy-button" onclick="copyToClipboard('run-cmd')">
+                            <i data-lucide="copy"></i> Copiar comando
+                        </button>
+                    </div>
+                    <pre id="run-cmd"><code><span class="c-comment"># Arranca ambos servicios en segundo plano</span>
+docker compose up -d
+
+<span class="c-comment"># Sigue los logs de vLLM mientras carga el modelo (primera vez: ~10-15 min)</span>
+docker logs -f qwen-vllm
+
+<span class="c-comment"># Una vez cargado, abre la interfaz en el navegador:</span>
+<span class="c-comment">#   http://&lt;IP-de-la-Spark&gt;:3000</span></code></pre>
+                </div>
+            </section>
+
+            <div class="bottom-nav">
+                <a href="nodo-spark.html" class="cta-button" style="background: var(--text-primary);">
+                    <i data-lucide="arrow-left"></i> Volver a Spark
+                </a>
+                <a href="manual-single-spark.html" class="cta-button" style="background: #76b900;">
+                    <i data-lucide="tablet"></i> Manual Single-Spark
+                </a>
+                <a href="manual-spark.html" class="cta-button" style="background: var(--accent-blue);">
+                    Manual Dual-Spark <i data-lucide="arrow-right"></i>
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <img src="logo-simarro.webp" alt="Logo" style="height: 120px; margin-bottom: 1rem; opacity: 1;">
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            &copy; 2026 IES Dr. Lluís Simarro - Centro de Excelencia.<br>
+            Cerrando la brecha tecnológica en la educación.
+        </p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
